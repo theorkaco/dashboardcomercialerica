@@ -678,7 +678,7 @@ async function fetchSheet() {
     const res = await fetch(url);
     const text = await res.text();
     // Google envolve o JSON num callback
-    const json = JSON.parse(text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1));
+    const json = JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
     return parseSheet(json);
   } catch(e) {
     document.getElementById('error-banner').classList.add('show');
