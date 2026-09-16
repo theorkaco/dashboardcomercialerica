@@ -673,11 +673,12 @@ let PERIOD_RECEITA = 'semana';
 // FETCH PLANILHA
 // ─────────────────────────────────────────────
 async function fetchSheet() {
-  const PROXY_URL = 'https://script.google.com/macros/s/AKfycbxNMF0rSj-SjaUMNakU5HsPr-rMWKI2H1L2IxrPRbaV6Gao9IFhK5JUhUwQ-ecKPvGc/exec';
+  const PROXY_URL = 'https://script.google.com/macros/s/AKfycbwgnBlMJ67Z2N-N2ypPBxwnzilxrnsKPJl0sFw5VUT4RT2_jM-S6Gp-sDV_AMzqLBf-sg/exec';
   try {
     const res = await fetch(PROXY_URL);
-    const rows = await res.json();
-    return rows.filter(r => r['ID'] || r['Nome Completo']);
+    const json = await res.json();
+    if (json.status !== 'ok') throw new Error(json.message);
+    return json.data.filter(r => r['ID'] || r['Nome Completo']);
   } catch(e) {
     document.getElementById('error-banner').classList.add('show');
     return null;
@@ -1192,13 +1193,7 @@ function updateTime() {
 
 async function init() {
   const data = await fetchSheet();
-
-  // DADOS DE EXEMPLO — remove este bloco quando a planilha estiver pública
-  if (!data || data.length === 0) {
-    ALL_ROWS = generateMockData();
-  } else {
-    ALL_ROWS = data;
-  }
+  ALL_ROWS = data || [];
 
   populateFilters();
   applyFilters(); // aplica filtro padrão (30 dias)
