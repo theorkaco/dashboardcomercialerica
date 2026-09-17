@@ -211,9 +211,11 @@ footer { border-top: 1px solid var(--border-light); padding: 1rem clamp(1rem,3vw
     <select id="f-status" onchange="applyFilters()">
       <option value="">Todos</option>
       <option value="comprou">Comprou</option>
-      <option value="noshow">No Show</option>
-      <option value="cancel">Cancelamento</option>
-      <option value="reagend">Reagendamento</option>
+      <option value="Compareceu">Compareceu</option>
+      <option value="Agendado">Agendado</option>
+      <option value="No Show">No Show</option>
+      <option value="Reagendamento">Reagendado</option>
+      <option value="Cancelado">Cancelado</option>
     </select>
   </div>
   <div class="filter-sep"></div>
@@ -370,10 +372,7 @@ async function fetchData() {
 
 // ── HELPERS ─────────────────────────────────────────────────
 function comprou(r) {
-  const obs = (r['Observacao'] || '').toLowerCase();
-  const prod = (r['Produto Vendido'] || '').trim();
-  const pitch = (r['Pitch CLOSER'] || '').toLowerCase();
-  return prod !== '' || obs.includes('comprou') || pitch.includes('comprou');
+  return (r['Produto Vendido'] || '').trim() !== '';
 }
 
 function getPreco(r) {
@@ -382,11 +381,12 @@ function getPreco(r) {
 }
 
 function getStatus(r) {
-  const s = (r['Status'] || '').toLowerCase().trim();
-  if (s === 'sim') return 'sim';
-  if (s === 'no show') return 'noshow';
-  if (s.includes('cancel')) return 'cancel';
-  if (s.includes('reagend')) return 'reagend';
+  const s = (r['Status'] || '').trim();
+  if (s === 'Compareceu') return 'compareceu';
+  if (s === 'Agendado')   return 'agendado';
+  if (s === 'No Show')    return 'noshow';
+  if (s === 'Reagendamento') return 'reagend';
+  if (s === 'Cancelado')  return 'cancel';
   return 'outro';
 }
 
@@ -437,10 +437,12 @@ function applyFilters() {
     if (status) {
       const st = getStatus(r);
       const comp = comprou(r);
-      if (status === 'comprou' && !comp) return false;
-      if (status === 'noshow'  && st !== 'noshow') return false;
-      if (status === 'cancel'  && st !== 'cancel') return false;
-      if (status === 'reagend' && st !== 'reagend') return false;
+      if (status === 'comprou'        && !comp) return false;
+      if (status === 'Compareceu'     && st !== 'compareceu') return false;
+      if (status === 'Agendado'       && st !== 'agendado') return false;
+      if (status === 'No Show'        && st !== 'noshow') return false;
+      if (status === 'Reagendamento'  && st !== 'reagend') return false;
+      if (status === 'Cancelado'      && st !== 'cancel') return false;
     }
 
     if (produto) {
@@ -463,7 +465,7 @@ function applyFilters() {
 function renderKPIs() {
   const rows = FILTERED;
   const total     = rows.length;
-  const realizados = rows.filter(r => getStatus(r) === 'sim' || comprou(r)).length;
+  const realizados = rows.filter(r => getStatus(r) === 'compareceu' || comprou(r)).length;
   const noshow    = rows.filter(r => getStatus(r) === 'noshow').length;
   const vendas    = rows.filter(r => comprou(r)).length;
   const receita   = rows.filter(r => comprou(r)).reduce((s,r) => s + getPreco(r), 0);
@@ -493,8 +495,8 @@ function renderKPIs() {
 function renderFunil() {
   const rows = FILTERED;
   const agendados  = rows.length;
-  const realizados = rows.filter(r => getStatus(r) === 'sim' || comprou(r)).length;
-  const propostas  = rows.filter(r => comprou(r) || (r['Pitch CLOSER'] || '').trim() !== '').length;
+  const realizados = rows.filter(r => getStatus(r) === 'compareceu' || comprou(r)).length;
+  const propostas  = rows.filter(r => (r['Pitch CLOSER'] || '').trim() !== '').length;
   const vendas     = rows.filter(r => comprou(r)).length;
 
   const stages = [
@@ -605,7 +607,7 @@ function renderEquipe() {
       if (CURRENT_TAB !== 'todos' && role !== CURRENT_TAB) return;
       if (!pessoas[nome]) pessoas[nome] = { nome, role, total: 0, realizados: 0, vendas: 0, receita: 0 };
       pessoas[nome].total++;
-      if (getStatus(r) === 'sim' || comprou(r)) pessoas[nome].realizados++;
+      if (getStatus(r) === 'compareceu' || comprou(r)) pessoas[nome].realizados++;
       if (comprou(r)) {
         pessoas[nome].vendas++;
         pessoas[nome].receita += getPreco(r);
@@ -721,8 +723,8 @@ function switchPeriodR(p, btn) {
 }
 
 // ── RECENTES ─────────────────────────────────────────────────
-const STATUS_CLS = { sim:'s-sim', noshow:'s-noshow', cancel:'s-cancel', reagend:'s-reagend', outro:'s-outro' };
-const STATUS_LBL = { sim:'Realizada', noshow:'No Show', cancel:'Cancelado', reagend:'Reagendado', outro:'-' };
+const STATUS_CLS = { compareceu:'s-sim', agendado:'s-outro', noshow:'s-noshow', cancel:'s-cancel', reagend:'s-reagend', outro:'s-outro' };
+const STATUS_LBL = { compareceu:'Compareceu', agendado:'Agendado', noshow:'No Show', cancel:'Cancelado', reagend:'Reagendado', outro:'-' };
 
 function renderRecent() {
   const rows = [...FILTERED]
