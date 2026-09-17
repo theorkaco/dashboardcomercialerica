@@ -8,470 +8,176 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
 :root {
-  /* ORKA Co. brand */
-  --blue: #C85C1F;
-  --blue-light: #e07340;
-  --blue-dark: #18365D;
-  --cream: #F7F4EE;
-  --bg: #141210;
-  --bg2: #1c1916;
-  --bg3: #22201c;
-  --bg4: #2a2720;
-  --border: rgba(200,92,31,0.28);
-  --border-light: rgba(200,92,31,0.12);
-  --text: #F7F4EE;
-  --text-muted: #DDD3C6;
-  --text-dim: #8a7d6e;
-  --green: #4CAF7D;
-  --green-bg: rgba(76,175,125,0.1);
-  --red: #E05C5C;
-  --red-bg: rgba(224,92,92,0.1);
-  --yellow: #F0B429;
-  --yellow-bg: rgba(240,180,41,0.1);
-  --navy: #18365D;
+  --blue: #C85C1F; --blue-light: #e07340; --navy: #18365D;
+  --cream: #F7F4EE; --bg: #141210; --bg2: #1c1916; --bg3: #22201c; --bg4: #2a2720;
+  --border: rgba(200,92,31,0.28); --border-light: rgba(200,92,31,0.12);
+  --text: #F7F4EE; --text-muted: #DDD3C6; --text-dim: #8a7d6e;
+  --green: #4CAF7D; --red: #E05C5C; --red-bg: rgba(224,92,92,0.1); --yellow: #F0B429;
 }
-
 html { scroll-behavior: smooth; }
-
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'DM Sans', sans-serif;
-  font-size: 14px;
-  line-height: 1.6;
-  min-height: 100vh;
-}
-
-/* ── NAV ── */
+body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px; line-height: 1.6; min-height: 100vh; }
 nav {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: rgba(14,12,10,0.96);
-  backdrop-filter: blur(20px);
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(14,12,10,0.96); backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border-light);
-  padding: 0 clamp(1rem, 3vw, 2.5rem);
-  height: 56px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  padding: 0 clamp(1rem,3vw,2.5rem); height: 56px;
+  display: flex; align-items: center; justify-content: space-between;
 }
-
 .nav-logo { display: flex; align-items: center; gap: 10px; }
 .nav-mark {
   width: 30px; height: 30px;
   background: linear-gradient(135deg, var(--navy), var(--blue));
-  border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 13px; font-weight: 700; color: #fff; letter-spacing: -0.5px;
+  border-radius: 8px; display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700; color: #fff;
 }
-.nav-name { font-size: 13px; font-weight: 600; color: var(--text); }
-.nav-sub { font-size: 10px; color: var(--text-muted); letter-spacing: 0.06em; text-transform: uppercase; }
-
+.nav-name { font-size: 13px; font-weight: 600; }
+.nav-sub { font-size: 10px; color: var(--text-muted); letter-spacing: .06em; text-transform: uppercase; }
 .nav-right { display: flex; align-items: center; gap: 16px; }
-.live-badge {
-  display: flex; align-items: center; gap: 6px;
-  font-size: 11px; font-weight: 500; color: var(--green);
-  letter-spacing: 0.08em; text-transform: uppercase;
-}
-.live-dot {
-  width: 6px; height: 6px; border-radius: 50%;
-  background: var(--green); animation: pulse 2s infinite;
-}
-@keyframes pulse {
-  0%, 100% { opacity:1; transform:scale(1); }
-  50% { opacity:0.4; transform:scale(0.7); }
-}
+.live-badge { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 500; color: var(--green); letter-spacing: .08em; text-transform: uppercase; }
+.live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.7)} }
 .update-time { font-size: 11px; color: var(--text-dim); }
 
-/* ── FILTERS BAR ── */
 .filters-bar {
-  background: var(--bg2);
-  border-bottom: 1px solid var(--border-light);
-  padding: 10px clamp(1rem, 3vw, 2.5rem);
+  background: var(--bg2); border-bottom: 1px solid var(--border-light);
+  padding: 10px clamp(1rem,3vw,2.5rem);
   display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
 }
-
 .filter-group { display: flex; align-items: center; gap: 6px; }
-.filter-label { font-size: 10px; font-weight: 600; color: var(--text-dim); letter-spacing: 0.1em; text-transform: uppercase; white-space: nowrap; }
-
-select, .filter-btn {
-  background: var(--bg3);
-  border: 1px solid var(--border-light);
-  color: var(--text-muted);
-  font-family: 'DM Sans', sans-serif;
-  font-size: 12px;
-  padding: 5px 10px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s;
-  outline: none;
-  appearance: none;
-  -webkit-appearance: none;
+.filter-label { font-size: 10px; font-weight: 600; color: var(--text-dim); letter-spacing: .1em; text-transform: uppercase; white-space: nowrap; }
+select {
+  background: var(--bg3); border: 1px solid var(--border-light); color: var(--text-muted);
+  font-family: 'DM Sans', sans-serif; font-size: 12px; padding: 5px 24px 5px 10px;
+  border-radius: 8px; cursor: pointer; transition: all .2s; outline: none;
+  appearance: none; -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%234A6A8A' fill='none' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 8px center;
 }
-select:hover, .filter-btn:hover, select:focus { border-color: var(--border); color: var(--text); }
-select { padding-right: 24px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%234A6A8A' fill='none' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; }
-
-.filter-btn.active { border-color: var(--blue); color: var(--blue-light); background: rgba(74,144,217,0.08); }
+select:hover, select:focus { border-color: var(--border); color: var(--text); }
 .filter-sep { width: 1px; height: 20px; background: var(--border-light); }
 
-/* ── MAIN LAYOUT ── */
-.main {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 1.5rem clamp(1rem, 3vw, 2.5rem);
-  display: flex; flex-direction: column; gap: 1.5rem;
-}
+.main { max-width: 1200px; margin: 0 auto; padding: 1.5rem clamp(1rem,3vw,2.5rem); display: flex; flex-direction: column; gap: 1.5rem; }
 
-/* ── KPI ROW ── */
-.kpi-row {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 10px;
-}
-
+.kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
 .kpi-card {
-  background: var(--bg2);
-  border: 1px solid var(--border-light);
-  border-radius: 14px;
-  padding: 1.1rem 1.1rem 0.9rem;
-  position: relative; overflow: hidden;
-  transition: border-color 0.2s;
+  background: var(--bg2); border: 1px solid var(--border-light); border-radius: 14px;
+  padding: 1.1rem 1.1rem .9rem; transition: border-color .2s;
 }
 .kpi-card:hover { border-color: var(--border); }
-.kpi-card.highlight {
-  border-color: var(--border);
-  background: linear-gradient(135deg, var(--bg2) 0%, rgba(74,144,217,0.06) 100%);
-}
+.kpi-card.highlight { border-color: var(--border); background: linear-gradient(135deg, var(--bg2) 0%, rgba(200,92,31,0.06) 100%); }
+.kpi-icon { font-size: 16px; margin-bottom: .7rem; width: 30px; height: 30px; background: rgba(200,92,31,0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+.kpi-value { font-family: 'Montserrat', sans-serif; font-size: 1.7rem; font-weight: 300; color: var(--cream); line-height: 1; margin-bottom: .2rem; }
+.kpi-label { font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: .08em; font-weight: 600; }
+.kpi-delta { font-size: 11px; font-weight: 500; margin-top: .4rem; color: var(--text-muted); }
+.kpi-delta.good { color: var(--green); }
+.kpi-delta.bad { color: var(--red); }
 
-.kpi-icon {
-  font-size: 16px; margin-bottom: 0.7rem;
-  width: 30px; height: 30px;
-  background: rgba(74,144,217,0.1); border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-}
-
-.kpi-value {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 1.7rem; font-weight: 300;
-  color: var(--cream); line-height: 1;
-  margin-bottom: 0.2rem;
-}
-.kpi-label {
-  font-size: 10px; color: var(--text-dim);
-  text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600;
-}
-.kpi-delta {
-  font-size: 11px; font-weight: 500; margin-top: 0.4rem;
-  display: flex; align-items: center; gap: 3px;
-}
-.kpi-delta.up { color: var(--green); }
-.kpi-delta.down { color: var(--red); }
-
-/* ── SECTION HEADER ── */
 .section-header { margin-bottom: 1rem; }
-.section-label {
-  font-size: 10px; font-weight: 700; letter-spacing: 0.18em;
-  text-transform: uppercase; color: var(--blue); margin-bottom: 0.2rem;
-}
-.section-title {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 1.2rem; font-weight: 600; color: var(--cream);
-}
+.section-label { font-size: 10px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: var(--blue); margin-bottom: .2rem; }
+.section-title { font-family: 'Montserrat', sans-serif; font-size: 1.2rem; font-weight: 600; color: var(--cream); }
 
-/* ── FUNNEL ── */
-.funnel-wrap {
-  display: grid;
-  grid-template-columns: 1fr 320px;
-  gap: 16px;
-}
+/* FUNIL */
+.funnel-wrap { display: grid; grid-template-columns: 1fr 300px; gap: 16px; }
 @media (max-width: 800px) { .funnel-wrap { grid-template-columns: 1fr; } }
+.funnel-visual { background: var(--bg2); border: 1px solid var(--border-light); border-radius: 16px; padding: 1.5rem; }
+.funnel-stage { margin-bottom: 6px; }
+.funnel-bar-wrap { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
+.funnel-bar-label { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .06em; width: 110px; flex-shrink: 0; text-align: right; }
+.funnel-bar-track { flex: 1; height: 36px; background: var(--bg4); border-radius: 6px; overflow: hidden; }
+.funnel-bar-fill { height: 100%; border-radius: 6px; display: flex; align-items: center; padding-left: 12px; font-size: 13px; font-weight: 600; color: #fff; min-width: 36px; }
+.funnel-bar-count { width: 50px; flex-shrink: 0; font-size: 12px; font-weight: 600; color: var(--text); text-align: center; }
+.funnel-conversion { display: flex; align-items: center; gap: 8px; padding: 3px 0 3px 122px; font-size: 11px; color: var(--text-dim); }
+.conv-good { color: var(--green); font-weight: 600; }
+.conv-mid  { color: var(--yellow); font-weight: 600; }
+.conv-bad  { color: var(--red); font-weight: 600; }
+.conv-lost { color: var(--red); font-size: 10px; }
 
-.funnel-visual {
-  background: var(--bg2);
-  border: 1px solid var(--border-light);
-  border-radius: 16px;
-  padding: 1.5rem;
-}
+.funnel-side { display: flex; flex-direction: column; gap: 10px; }
+.stat-card { background: var(--bg2); border: 1px solid var(--border-light); border-radius: 14px; padding: 1rem 1.1rem; display: flex; justify-content: space-between; align-items: center; }
+.stat-label { font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: .08em; font-weight: 600; margin-bottom: 2px; }
+.stat-value { font-family: 'Montserrat', sans-serif; font-size: 1.4rem; font-weight: 300; color: var(--cream); }
+.stat-sub { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+.badge-atencao { background: var(--red-bg); border: 1px solid rgba(224,92,92,.2); color: var(--red); font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 100px; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }
 
-.funnel-stage {
-  position: relative;
-  margin-bottom: 6px;
-}
-
-.funnel-bar-wrap {
-  display: flex; align-items: center; gap: 12px; margin-bottom: 4px;
-}
-
-.funnel-bar-label {
-  font-size: 11px; font-weight: 600; color: var(--text-muted);
-  text-transform: uppercase; letter-spacing: 0.06em;
-  width: 110px; flex-shrink: 0; text-align: right;
-}
-
-.funnel-bar-track {
-  flex: 1; height: 36px;
-  background: var(--bg4); border-radius: 6px; overflow: hidden; position: relative;
-}
-
-.funnel-bar-fill {
-  height: 100%; border-radius: 6px;
-  display: flex; align-items: center; padding-left: 12px;
-  font-size: 13px; font-weight: 600; color: #fff;
-  transition: width 1.2s cubic-bezier(0.16,1,0.3,1);
-  min-width: 40px;
-}
-
-.funnel-bar-count {
-  width: 50px; flex-shrink: 0;
-  font-size: 12px; font-weight: 600; color: var(--text); text-align: center;
-}
-
-.funnel-conversion {
-  display: flex; align-items: center; gap: 8px;
-  padding: 4px 0 4px 122px;
-  font-size: 11px; color: var(--text-dim);
-}
-.funnel-arrow { color: var(--text-dim); font-size: 10px; }
-.funnel-conv-pct { font-weight: 600; }
-.funnel-conv-pct.good { color: var(--green); }
-.funnel-conv-pct.mid { color: var(--yellow); }
-.funnel-conv-pct.bad { color: var(--red); }
-.funnel-conv-lost { color: var(--red); font-size: 10px; }
-
-/* ── FUNNEL SIDE STATS ── */
-.funnel-side {
-  display: flex; flex-direction: column; gap: 10px;
-}
-
-.funnel-stat-card {
-  background: var(--bg2);
-  border: 1px solid var(--border-light);
-  border-radius: 14px;
-  padding: 1rem 1.1rem;
-  display: flex; justify-content: space-between; align-items: center;
-}
-
-.funnel-stat-info {}
-.funnel-stat-label { font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; margin-bottom: 2px; }
-.funnel-stat-value { font-family: 'Montserrat', sans-serif; font-size: 1.4rem; font-weight: 300; color: var(--cream); }
-.funnel-stat-sub { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
-
-.bottleneck-badge {
-  background: var(--red-bg);
-  border: 1px solid rgba(224,92,92,0.2);
-  color: var(--red);
-  font-size: 10px; font-weight: 600;
-  padding: 3px 8px; border-radius: 100px;
-  letter-spacing: 0.06em; text-transform: uppercase;
-  white-space: nowrap;
-}
-
-/* ── TEAM TABLE ── */
-.team-section {
-  background: var(--bg2);
-  border: 1px solid var(--border-light);
-  border-radius: 16px;
-  overflow: hidden;
-}
-
-.team-tabs {
-  display: flex; border-bottom: 1px solid var(--border-light);
-  padding: 0 1.5rem;
-}
-
-.team-tab {
-  font-size: 12px; font-weight: 600; padding: 14px 16px;
-  color: var(--text-dim); border-bottom: 2px solid transparent;
-  cursor: pointer; transition: all 0.2s; letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
+/* EQUIPE */
+.team-section { background: var(--bg2); border: 1px solid var(--border-light); border-radius: 16px; overflow: hidden; }
+.team-tabs { display: flex; border-bottom: 1px solid var(--border-light); padding: 0 1.5rem; }
+.team-tab { font-size: 12px; font-weight: 600; padding: 14px 16px; color: var(--text-dim); border-bottom: 2px solid transparent; cursor: pointer; transition: all .2s; letter-spacing: .04em; text-transform: uppercase; }
 .team-tab:hover { color: var(--text-muted); }
 .team-tab.active { color: var(--blue-light); border-bottom-color: var(--blue); }
-
 .team-table { width: 100%; border-collapse: collapse; }
-
-.team-table th {
-  text-align: left; padding: 10px 16px;
-  font-size: 10px; font-weight: 600; color: var(--text-dim);
-  text-transform: uppercase; letter-spacing: 0.1em;
-  border-bottom: 1px solid var(--border-light);
-  background: var(--bg3);
-}
+.team-table th { text-align: left; padding: 10px 16px; font-size: 10px; font-weight: 600; color: var(--text-dim); text-transform: uppercase; letter-spacing: .1em; border-bottom: 1px solid var(--border-light); background: var(--bg3); }
 .team-table th:not(:first-child) { text-align: center; }
-
-.team-table td {
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--border-light);
-  font-size: 13px;
-}
+.team-table td { padding: 12px 16px; border-bottom: 1px solid var(--border-light); font-size: 13px; }
 .team-table tr:last-child td { border-bottom: none; }
-.team-table tr:hover td { background: rgba(74,144,217,0.02); }
-
+.team-table tr:hover td { background: rgba(200,92,31,.02); }
 .team-table td:not(:first-child) { text-align: center; }
-
-.td-name { font-weight: 600; color: var(--text); }
-.td-num { color: var(--text-muted); }
 .td-money { color: var(--blue-light); font-weight: 600; }
 .td-pct { font-weight: 600; }
 .td-pct.good { color: var(--green); }
-.td-pct.mid { color: var(--yellow); }
-.td-pct.bad { color: var(--red); }
+.td-pct.mid  { color: var(--yellow); }
+.td-pct.bad  { color: var(--red); }
+.role-badge { font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 100px; text-transform: uppercase; letter-spacing: .05em; }
+.role-ss     { background: rgba(200,92,31,.12); color: var(--blue-light); }
+.role-sdr    { background: rgba(240,180,41,.12); color: var(--yellow); }
+.role-closer { background: rgba(76,175,125,.12); color: var(--green); }
 
-.role-badge {
-  font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 100px;
-  text-transform: uppercase; letter-spacing: 0.05em;
-}
-.role-ss { background: rgba(74,144,217,0.12); color: var(--blue-light); }
-.role-sdr { background: rgba(240,180,41,0.12); color: var(--yellow); }
-.role-closer { background: rgba(76,175,125,0.12); color: var(--green); }
-
-/* ── CHART ── */
-.chart-wrap {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
+/* CHARTS */
+.chart-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 @media (max-width: 700px) { .chart-wrap { grid-template-columns: 1fr; } }
-
-.chart-card {
-  background: var(--bg2);
-  border: 1px solid var(--border-light);
-  border-radius: 16px;
-  padding: 1.25rem;
-}
-
-.chart-header {
-  display: flex; justify-content: space-between; align-items: flex-start;
-  margin-bottom: 1.25rem;
-}
-
+.chart-card { background: var(--bg2); border: 1px solid var(--border-light); border-radius: 16px; padding: 1.25rem; }
+.chart-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.25rem; }
 .chart-title { font-size: 13px; font-weight: 600; color: var(--text); }
 .chart-sub { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
-
 .period-btns { display: flex; gap: 4px; }
-.period-btn {
-  font-size: 10px; font-weight: 600; padding: 4px 9px;
-  border-radius: 6px; cursor: pointer; transition: all 0.15s;
-  border: 1px solid var(--border-light); color: var(--text-dim);
-  background: none; font-family: 'DM Sans', sans-serif;
-  text-transform: uppercase; letter-spacing: 0.06em;
-}
+.period-btn { font-size: 10px; font-weight: 600; padding: 4px 9px; border-radius: 6px; cursor: pointer; transition: all .15s; border: 1px solid var(--border-light); color: var(--text-dim); background: none; font-family: 'DM Sans', sans-serif; text-transform: uppercase; letter-spacing: .06em; }
 .period-btn:hover { color: var(--text-muted); border-color: var(--border); }
-.period-btn.active { background: rgba(74,144,217,0.12); border-color: var(--blue); color: var(--blue-light); }
-
-.bar-chart { display: flex; flex-direction: column; gap: 3px; height: 160px; justify-content: flex-end; }
-.bar-row { display: flex; align-items: flex-end; gap: 6px; height: 100%; }
+.period-btn.active { background: rgba(200,92,31,.12); border-color: var(--blue); color: var(--blue-light); }
 .bar-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 4px; }
-.bar-fill {
-  width: 100%; border-radius: 4px 4px 0 0;
-  transition: height 1s cubic-bezier(0.16,1,0.3,1);
-  position: relative;
-}
-.bar-fill:hover::after {
-  content: attr(data-tip);
-  position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
-  background: var(--bg4); color: var(--text); font-size: 11px;
-  padding: 3px 7px; border-radius: 5px; white-space: nowrap; margin-bottom: 4px;
-  pointer-events: none;
-}
-.bar-x { font-size: 9px; color: var(--text-dim); font-weight: 500; letter-spacing: 0.04em; }
-
-.legend { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 0.75rem; }
+.bar-fill { width: 100%; border-radius: 4px 4px 0 0; position: relative; }
+.bar-fill:hover::after { content: attr(data-tip); position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); background: var(--bg4); color: var(--text); font-size: 11px; padding: 3px 7px; border-radius: 5px; white-space: nowrap; margin-bottom: 4px; pointer-events: none; }
+.bar-x { font-size: 9px; color: var(--text-dim); font-weight: 500; letter-spacing: .04em; }
+.legend { display: flex; gap: 12px; flex-wrap: wrap; margin-top: .75rem; }
 .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); }
 .legend-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
 
-/* ── RECENT ── */
-.recent-table-wrap {
-  background: var(--bg2);
-  border: 1px solid var(--border-light);
-  border-radius: 16px;
-  overflow: hidden;
-}
-
-.recent-header {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 1rem 1.25rem;
-  border-bottom: 1px solid var(--border-light);
-}
-
-.recent-title { font-size: 13px; font-weight: 600; color: var(--text); }
+/* TABELA RECENTE */
+.recent-wrap { background: var(--bg2); border: 1px solid var(--border-light); border-radius: 16px; overflow: hidden; }
+.recent-header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.25rem; border-bottom: 1px solid var(--border-light); }
+.recent-title { font-size: 13px; font-weight: 600; }
 .recent-count { font-size: 11px; color: var(--text-dim); }
+.r-table { width: 100%; border-collapse: collapse; }
+.r-table th { text-align: left; padding: 8px 14px; font-size: 10px; font-weight: 600; color: var(--text-dim); text-transform: uppercase; letter-spacing: .1em; background: var(--bg3); }
+.r-table td { padding: 10px 14px; border-bottom: 1px solid var(--border-light); font-size: 12px; }
+.r-table tr:last-child td { border-bottom: none; }
+.r-table tr:hover td { background: rgba(200,92,31,.02); }
 
-.recent-table { width: 100%; border-collapse: collapse; }
-.recent-table th {
-  text-align: left; padding: 8px 16px;
-  font-size: 10px; font-weight: 600; color: var(--text-dim);
-  text-transform: uppercase; letter-spacing: 0.1em;
-  background: var(--bg3);
-}
-.recent-table td { padding: 11px 16px; border-bottom: 1px solid var(--border-light); font-size: 13px; }
-.recent-table tr:last-child td { border-bottom: none; }
-.recent-table tr:hover td { background: rgba(74,144,217,0.02); }
+.status-badge { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 100px; text-transform: uppercase; letter-spacing: .05em; white-space: nowrap; }
+.s-sim        { background: rgba(76,175,125,.15); color: var(--green); border: 1px solid rgba(76,175,125,.3); }
+.s-noshow     { background: var(--red-bg); color: var(--red); }
+.s-cancel     { background: rgba(240,180,41,.12); color: var(--yellow); }
+.s-reagend    { background: rgba(74,144,217,.12); color: #7DB8F0; }
+.s-outro      { background: var(--bg4); color: var(--text-muted); }
 
-.etapa-badge {
-  font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 100px;
-  text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap;
-}
-.etapa-lead { background: var(--bg4); color: var(--text-muted); }
-.etapa-qual { background: rgba(240,180,41,0.12); color: var(--yellow); }
-.etapa-reu-ag { background: rgba(74,144,217,0.12); color: var(--blue-light); }
-.etapa-reu-re { background: rgba(74,144,217,0.2); color: var(--blue-light); }
-.etapa-prop { background: rgba(76,175,125,0.1); color: var(--green); }
-.etapa-venda { background: rgba(76,175,125,0.2); color: var(--green); border: 1px solid rgba(76,175,125,0.3); }
-.etapa-perdido { background: var(--red-bg); color: var(--red); }
+.prod-badge { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 100px; background: rgba(200,92,31,.12); color: var(--blue-light); white-space: nowrap; }
 
-.temp-badge {
-  font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 100px;
-}
-.temp-quente { background: rgba(224,92,92,0.12); color: var(--red); }
-.temp-morno { background: rgba(240,180,41,0.12); color: var(--yellow); }
-.temp-frio { background: rgba(74,144,217,0.1); color: var(--blue-light); }
-
-/* ── LOADING ── */
-.loading-state {
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  padding: 3rem; gap: 12px; color: var(--text-dim);
-}
-.spinner {
-  width: 24px; height: 24px; border-radius: 50%;
-  border: 2px solid var(--border-light); border-top-color: var(--blue);
-  animation: spin 0.8s linear infinite;
-}
+.loading-state { display: flex; align-items: center; justify-content: center; padding: 3rem; gap: 12px; color: var(--text-dim); }
+.spinner { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--border-light); border-top-color: var(--blue); animation: spin .8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
-
-/* ── EMPTY ── */
 .empty-state { padding: 2rem; text-align: center; color: var(--text-dim); font-size: 13px; }
 
-/* ── FOOTER ── */
-footer {
-  border-top: 1px solid var(--border-light);
-  padding: 1rem clamp(1rem, 3vw, 2.5rem);
-  display: flex; justify-content: space-between; align-items: center;
-  gap: 1rem; flex-wrap: wrap;
-  font-size: 11px; color: var(--text-dim);
-}
+footer { border-top: 1px solid var(--border-light); padding: 1rem clamp(1rem,3vw,2.5rem); display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; font-size: 11px; color: var(--text-dim); }
 
-.footer-note { display: flex; align-items: center; gap: 6px; }
-
-/* ── FADE-IN ── */
-.fade-in { opacity: 0; transform: translateY(12px); transition: opacity 0.5s ease, transform 0.5s ease; }
+.fade-in { opacity: 0; transform: translateY(12px); transition: opacity .5s ease, transform .5s ease; }
 .fade-in.visible { opacity: 1; transform: translateY(0); }
 
-/* ── ERROR ── */
-.error-banner {
-  background: var(--red-bg); border: 1px solid rgba(224,92,92,0.2);
-  color: var(--red); font-size: 12px; padding: 8px 1.5rem;
-  display: none;
-}
+.error-banner { background: var(--red-bg); border: 1px solid rgba(224,92,92,.2); color: var(--red); font-size: 12px; padding: 8px 1.5rem; display: none; }
 .error-banner.show { display: block; }
 </style>
 </head>
 <body>
 
-<!-- NAV -->
 <nav>
   <div class="nav-logo">
     <div class="nav-mark">OK</div>
@@ -481,20 +187,13 @@ footer {
     </div>
   </div>
   <div class="nav-right">
-    <div class="live-badge">
-      <div class="live-dot"></div>
-      Ao vivo
-    </div>
+    <div class="live-badge"><div class="live-dot"></div>Ao vivo</div>
     <div class="update-time" id="update-time">Carregando...</div>
   </div>
 </nav>
 
-<!-- ERROR BANNER -->
-<div class="error-banner" id="error-banner">
-  Não foi possível carregar os dados da planilha. Verifique se ela está pública para leitura.
-</div>
+<div class="error-banner" id="error-banner">Não foi possível carregar os dados. Verifique o Apps Script.</div>
 
-<!-- FILTERS -->
 <div class="filters-bar">
   <div class="filter-group">
     <span class="filter-label">Período</span>
@@ -508,53 +207,47 @@ footer {
   </div>
   <div class="filter-sep"></div>
   <div class="filter-group">
-    <span class="filter-label">Vendedor</span>
-    <select id="f-vendedor" onchange="applyFilters()">
-      <option value="">Todos</option>
-    </select>
-  </div>
-  <div class="filter-sep"></div>
-  <div class="filter-group">
-    <span class="filter-label">Função</span>
-    <select id="f-funcao" onchange="applyFilters()">
-      <option value="">Todas</option>
-      <option value="SS">Social Seller</option>
-      <option value="SDR">SDR</option>
-      <option value="Closer">Closer</option>
-    </select>
-  </div>
-  <div class="filter-sep"></div>
-  <div class="filter-group">
     <span class="filter-label">Status</span>
     <select id="f-status" onchange="applyFilters()">
       <option value="">Todos</option>
-      <option value="Aberto">Aberto</option>
-      <option value="Ganho">Ganho</option>
-      <option value="Perdido">Perdido</option>
+      <option value="comprou">Comprou</option>
+      <option value="noshow">No Show</option>
+      <option value="cancel">Cancelamento</option>
+      <option value="reagend">Reagendamento</option>
     </select>
   </div>
   <div class="filter-sep"></div>
   <div class="filter-group">
-    <span class="filter-label">Origem</span>
-    <select id="f-origem" onchange="applyFilters()">
-      <option value="">Todas</option>
+    <span class="filter-label">Produto</span>
+    <select id="f-produto" onchange="applyFilters()">
+      <option value="">Todos</option>
+      <option value="ATIVAÇÃO">Ativação</option>
+      <option value="MENTORIA">Mentoria</option>
+      <option value="TREINAMENTO LABIO">Treinamento Lábio</option>
+      <option value="CIENCIA DA CORE">Ciência da Core</option>
+    </select>
+  </div>
+  <div class="filter-sep"></div>
+  <div class="filter-group">
+    <span class="filter-label">Lead</span>
+    <select id="f-lead" onchange="applyFilters()">
+      <option value="">Todos</option>
+      <option value="NOVO">Novo</option>
+      <option value="ANTIGO">Antigo</option>
     </select>
   </div>
 </div>
 
-<!-- MAIN -->
 <div class="main">
 
-  <!-- KPIs -->
   <div class="kpi-row fade-in" id="kpi-row">
     <div class="loading-state"><div class="spinner"></div></div>
   </div>
 
-  <!-- FUNIL + SIDE STATS -->
-  <div class="fade-in" id="funil-section">
+  <div class="fade-in">
     <div class="section-header">
       <div class="section-label">Funil de Vendas</div>
-      <div class="section-title">Visão do funil completo</div>
+      <div class="section-title">Do agendamento ao fechamento</div>
     </div>
     <div class="funnel-wrap">
       <div class="funnel-visual" id="funil-visual">
@@ -566,27 +259,23 @@ footer {
     </div>
   </div>
 
-  <!-- EQUIPE -->
-  <div class="fade-in" id="equipe-section">
+  <div class="fade-in">
     <div class="section-header">
       <div class="section-label">Equipe</div>
       <div class="section-title">Desempenho por colaborador</div>
     </div>
     <div class="team-section">
       <div class="team-tabs">
-        <div class="team-tab active" onclick="switchTab('todos')">Todos</div>
-        <div class="team-tab" onclick="switchTab('SS')">Social Seller</div>
-        <div class="team-tab" onclick="switchTab('SDR')">SDR</div>
-        <div class="team-tab" onclick="switchTab('Closer')">Closer</div>
+        <div class="team-tab active" onclick="switchTab('todos',this)">Todos</div>
+        <div class="team-tab" onclick="switchTab('SS',this)">Social Seller</div>
+        <div class="team-tab" onclick="switchTab('SDR',this)">SDR</div>
+        <div class="team-tab" onclick="switchTab('Closer',this)">Closer</div>
       </div>
-      <div id="team-body">
-        <div class="loading-state"><div class="spinner"></div></div>
-      </div>
+      <div id="team-body"><div class="loading-state"><div class="spinner"></div></div></div>
     </div>
   </div>
 
-  <!-- CHARTS -->
-  <div class="fade-in" id="charts-section">
+  <div class="fade-in">
     <div class="section-header">
       <div class="section-label">Evolução</div>
       <div class="section-title">Performance ao longo do tempo</div>
@@ -595,7 +284,7 @@ footer {
       <div class="chart-card">
         <div class="chart-header">
           <div>
-            <div class="chart-title">Leads × Vendas</div>
+            <div class="chart-title">Agendamentos × Vendas</div>
             <div class="chart-sub">Volume por período</div>
           </div>
           <div class="period-btns">
@@ -604,17 +293,17 @@ footer {
             <button class="period-btn" onclick="switchPeriod('mes',this)">M</button>
           </div>
         </div>
-        <div id="chart-leads" style="height:160px; display:flex; align-items:flex-end; gap:4px; padding-bottom:20px; position:relative;"></div>
+        <div id="chart-ag" style="height:160px;display:flex;align-items:flex-end;gap:4px;padding-bottom:20px;"></div>
         <div class="legend">
-          <div class="legend-item"><div class="legend-dot" style="background:#18365D"></div>Leads</div>
-          <div class="legend-item"><div class="legend-dot" style="background:var(--blue)"></div>Vendas</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--navy)"></div>Agendados</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Vendas</div>
         </div>
       </div>
       <div class="chart-card">
         <div class="chart-header">
           <div>
             <div class="chart-title">Receita</div>
-            <div class="chart-sub">Valor vendido por período</div>
+            <div class="chart-sub">Valor gerado por período</div>
           </div>
           <div class="period-btns">
             <button class="period-btn" onclick="switchPeriodR('dia',this)">D</button>
@@ -622,7 +311,7 @@ footer {
             <button class="period-btn" onclick="switchPeriodR('mes',this)">M</button>
           </div>
         </div>
-        <div id="chart-receita" style="height:160px; display:flex; align-items:flex-end; gap:4px; padding-bottom:20px; position:relative;"></div>
+        <div id="chart-rec" style="height:160px;display:flex;align-items:flex-end;gap:4px;padding-bottom:20px;"></div>
         <div class="legend">
           <div class="legend-item"><div class="legend-dot" style="background:var(--blue)"></div>Receita (R$)</div>
         </div>
@@ -630,220 +319,164 @@ footer {
     </div>
   </div>
 
-  <!-- RECENT LEADS -->
-  <div class="fade-in" id="recent-section">
-    <div class="recent-table-wrap">
+  <div class="fade-in">
+    <div class="recent-wrap">
       <div class="recent-header">
-        <div class="recent-title">Leads Recentes</div>
+        <div class="recent-title">Agendamentos Recentes</div>
         <div class="recent-count" id="recent-count"></div>
       </div>
-      <div id="recent-body">
-        <div class="loading-state"><div class="spinner"></div></div>
-      </div>
+      <div id="recent-body"><div class="loading-state"><div class="spinner"></div></div></div>
     </div>
   </div>
 
 </div>
 
 <footer>
-  <div class="footer-note">
-    📊 ORKA Co. · Dados via Google Sheets · Atualização automática a cada 5 min
-  </div>
-  <div id="footer-time"></div>
+  <span>📊 ORKA Co. · Dados via Google Sheets · Atualiza a cada 5 min</span>
+  <span id="footer-time"></span>
 </footer>
 
 <script>
-// ─────────────────────────────────────────────
-// CONFIGURAÇÃO — ajuste aqui
-// ─────────────────────────────────────────────
-const SHEET_ID = '1-dfBnAJOtQ3rql18fnv1RyoLvqW2bUD6Ecfqk1UOQqE';
-const SHEET_NAME = 'SHEET_NAME'; // nome da aba — ajuste se necessário
-const REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutos
+// ── CONFIG ──────────────────────────────────────────────────
+const PROXY_URL = 'https://script.google.com/macros/s/AKfycbyDYMvkEQJa-pdeh1Gy2pRaf4xflD61AFotlvnaKZKbQsW6CYYVBTqbHQfpNleLFkXTkg/exec';
+const REFRESH_INTERVAL = 5 * 60 * 1000;
 
-// ─────────────────────────────────────────────
-// ESTADO
-// ─────────────────────────────────────────────
-let ALL_ROWS = [];
-let FILTERED = [];
-let CURRENT_TAB = 'todos';
-let PERIOD_LEADS = 'semana';
-let PERIOD_RECEITA = 'semana';
+// Preços dos produtos
+const PRECOS = {
+  'ATIVAÇÃO': 5997,
+  'MENTORIA': 15000,
+  'TREINAMENTO LABIO': 2497,
+  'TREINAMENTO LÁBIO': 2497,
+  'CIENCIA DA CORE': 1997,
+  'CIÊNCIA DA CORE': 1997,
+};
 
-// ─────────────────────────────────────────────
-// FETCH PLANILHA
-// ─────────────────────────────────────────────
-async function fetchSheet() {
-  const PROXY_URL = 'https://script.google.com/macros/s/AKfycbwgnBlMJ67Z2N-N2ypPBxwnzilxrnsKPJl0sFw5VUT4RT2_jM-S6Gp-sDV_AMzqLBf-sg/exec';
+// ── ESTADO ──────────────────────────────────────────────────
+let ALL = [], FILTERED = [], CURRENT_TAB = 'todos';
+let PERIOD_AG = 'semana', PERIOD_REC = 'semana';
+
+// ── FETCH ───────────────────────────────────────────────────
+async function fetchData() {
   try {
     const res = await fetch(PROXY_URL);
     const json = await res.json();
     if (json.status !== 'ok') throw new Error(json.message);
-    return json.data.filter(r => r['ID'] || r['Nome Completo']);
+    return json.data;
   } catch(e) {
     document.getElementById('error-banner').classList.add('show');
     return null;
   }
 }
 
-function parseSheet(json) {
-  const cols = json.table.cols.map(c => c.label);
-  const rows = json.table.rows || [];
-
-  return rows.map(r => {
-    const obj = {};
-    r.c.forEach((cell, i) => {
-      const label = cols[i];
-      if (!label) return;
-      obj[label] = cell ? cell.v : null;
-      // datas vêm como "Date(2024,0,15)" — converter
-      if (cell && cell.v && typeof cell.v === 'string' && cell.v.startsWith('Date(')) {
-        const parts = cell.v.match(/\d+/g);
-        if (parts) obj[label] = new Date(+parts[0], +parts[1], +parts[2]);
-      }
-    });
-    return obj;
-  }).filter(r => r['ID'] || r['Nome Completo']); // remove linhas vazias
+// ── HELPERS ─────────────────────────────────────────────────
+function comprou(r) {
+  const obs = (r['Observacao'] || '').toLowerCase();
+  const prod = (r['Produto Vendido'] || '').trim();
+  const pitch = (r['Pitch CLOSER'] || '').toLowerCase();
+  return prod !== '' || obs.includes('comprou') || pitch.includes('comprou');
 }
 
-// ─────────────────────────────────────────────
-// FILTROS
-// ─────────────────────────────────────────────
-function applyFilters() {
-  const periodo = document.getElementById('f-periodo').value;
-  const vendedor = document.getElementById('f-vendedor').value;
-  const funcao = document.getElementById('f-funcao').value;
-  const status = document.getElementById('f-status').value;
-  const origem = document.getElementById('f-origem').value;
-
-  const now = new Date();
-  let cutoff = null;
-  if (periodo === '7') cutoff = new Date(now - 7*86400000);
-  else if (periodo === '30') cutoff = new Date(now - 30*86400000);
-  else if (periodo === '90') cutoff = new Date(now - 90*86400000);
-  else if (periodo === 'mes') cutoff = new Date(now.getFullYear(), now.getMonth(), 1);
-
-  FILTERED = ALL_ROWS.filter(r => {
-    const dataEntrada = r['Data Entrada'];
-    if (cutoff && dataEntrada) {
-      const d = dataEntrada instanceof Date ? dataEntrada : new Date(dataEntrada);
-      if (d < cutoff) return false;
-    }
-    if (status && r['Status'] !== status) return false;
-    if (origem && r['Origem'] !== origem) return false;
-    if (vendedor) {
-      if (r['Social Seller'] !== vendedor && r['SDR'] !== vendedor && r['Closer'] !== vendedor) return false;
-    }
-    if (funcao === 'SS' && !r['Social Seller']) return false;
-    if (funcao === 'SDR' && !r['SDR']) return false;
-    if (funcao === 'Closer' && !r['Closer']) return false;
-    return true;
-  });
-
-  renderAll();
+function getPreco(r) {
+  const prod = (r['Produto Vendido'] || r['Último Funil'] || '').toUpperCase().trim();
+  return PRECOS[prod] || 0;
 }
 
-function populateFilters() {
-  // vendedores únicos
-  const vSet = new Set();
-  ALL_ROWS.forEach(r => {
-    if (r['Social Seller']) vSet.add(r['Social Seller']);
-    if (r['SDR']) vSet.add(r['SDR']);
-    if (r['Closer']) vSet.add(r['Closer']);
-  });
-  const vSel = document.getElementById('f-vendedor');
-  [...vSet].sort().forEach(v => {
-    const o = document.createElement('option'); o.value = v; o.textContent = v;
-    vSel.appendChild(o);
-  });
-
-  // origens únicas
-  const oSet = new Set();
-  ALL_ROWS.forEach(r => { if (r['Origem']) oSet.add(r['Origem']); });
-  const oSel = document.getElementById('f-origem');
-  [...oSet].sort().forEach(v => {
-    const o = document.createElement('option'); o.value = v; o.textContent = v;
-    oSel.appendChild(o);
-  });
+function getStatus(r) {
+  const s = (r['Status'] || '').toLowerCase().trim();
+  if (s === 'sim') return 'sim';
+  if (s === 'no show') return 'noshow';
+  if (s.includes('cancel')) return 'cancel';
+  if (s.includes('reagend')) return 'reagend';
+  return 'outro';
 }
 
-// ─────────────────────────────────────────────
-// HELPERS
-// ─────────────────────────────────────────────
-const ETAPA_ORDER = ['Lead','Qualificado','Reunião Agendada','Reunião Realizada','Proposta Enviada','Venda Fechada'];
-const ETAPA_COLORS = {
-  'Lead': 'rgba(24,54,93,0.7)',
-  'Qualificado': 'rgba(24,54,93,0.85)',
-  'Reunião Agendada': 'rgba(200,92,31,0.5)',
-  'Reunião Realizada': 'rgba(200,92,31,0.7)',
-  'Proposta Enviada': 'rgba(200,92,31,0.85)',
-  'Venda Fechada': '#C85C1F',
-};
-
-function pct(a, b) { return b ? Math.round((a/b)*100) : 0; }
-function fmtMoney(n) {
-  if (!n) return 'R$ 0';
-  if (n >= 1000) return 'R$ ' + (n/1000).toFixed(1).replace('.0','') + 'k';
-  return 'R$ ' + n.toLocaleString('pt-BR');
+function getDataRaw(r) {
+  // usa "Agendamento para o dia" como data principal
+  const v = r['  Agendamento\npara o dia'] || r['Agendamento no dia:'] || '';
+  if (!v) return null;
+  const d = new Date(v);
+  return isNaN(d) ? null : d;
 }
+
 function fmtDate(d) {
   if (!d) return '-';
   const dt = d instanceof Date ? d : new Date(d);
   if (isNaN(dt)) return '-';
   return dt.toLocaleDateString('pt-BR');
 }
-function convColor(p) { return p >= 40 ? 'good' : p >= 20 ? 'mid' : 'bad'; }
 
-function countByEtapa(rows) {
-  const counts = {};
-  ETAPA_ORDER.forEach(e => counts[e] = 0);
-  rows.forEach(r => {
-    const e = r['Etapa Atual'];
-    // acumular — quem chegou em venda passou por todas as etapas anteriores
-    if (e && ETAPA_ORDER.includes(e)) {
-      const idx = ETAPA_ORDER.indexOf(e);
-      for (let i = 0; i <= idx; i++) counts[ETAPA_ORDER[i]]++;
-    }
-  });
-  return counts;
+function fmtMoney(n) {
+  if (!n) return 'R$ 0';
+  if (n >= 1000000) return 'R$ ' + (n/1000000).toFixed(1).replace('.0','') + 'M';
+  if (n >= 1000) return 'R$ ' + (n/1000).toFixed(1).replace('.0','') + 'k';
+  return 'R$ ' + n.toLocaleString('pt-BR');
 }
 
-// ─────────────────────────────────────────────
-// RENDER KPIs
-// ─────────────────────────────────────────────
+function pct(a, b) { return b ? Math.round((a/b)*100) : 0; }
+function convCls(p) { return p >= 40 ? 'conv-good' : p >= 20 ? 'conv-mid' : 'conv-bad'; }
+function pctCls(p) { return p >= 40 ? 'good' : p >= 20 ? 'mid' : 'bad'; }
+
+// ── FILTROS ─────────────────────────────────────────────────
+function applyFilters() {
+  const periodo  = document.getElementById('f-periodo').value;
+  const status   = document.getElementById('f-status').value;
+  const produto  = document.getElementById('f-produto').value;
+  const lead     = document.getElementById('f-lead').value;
+
+  const now = new Date();
+  let cutoff = null;
+  if (periodo === '7')  cutoff = new Date(now - 7*86400000);
+  if (periodo === '30') cutoff = new Date(now - 30*86400000);
+  if (periodo === '90') cutoff = new Date(now - 90*86400000);
+  if (periodo === 'mes') cutoff = new Date(now.getFullYear(), now.getMonth(), 1);
+
+  FILTERED = ALL.filter(r => {
+    const d = getDataRaw(r);
+    if (cutoff && d && d < cutoff) return false;
+
+    if (status) {
+      const st = getStatus(r);
+      const comp = comprou(r);
+      if (status === 'comprou' && !comp) return false;
+      if (status === 'noshow'  && st !== 'noshow') return false;
+      if (status === 'cancel'  && st !== 'cancel') return false;
+      if (status === 'reagend' && st !== 'reagend') return false;
+    }
+
+    if (produto) {
+      const p = (r['Produto Vendido'] || r['Último Funil'] || '').toUpperCase().trim();
+      if (!p.includes(produto)) return false;
+    }
+
+    if (lead) {
+      const l = (r['Lead novo ou antigo?'] || '').toUpperCase().trim();
+      if (!l.includes(lead)) return false;
+    }
+
+    return true;
+  });
+
+  renderAll();
+}
+
+// ── KPIs ────────────────────────────────────────────────────
 function renderKPIs() {
   const rows = FILTERED;
-  const total = rows.length;
-  const qual = rows.filter(r => {
-    const idx = ETAPA_ORDER.indexOf(r['Etapa Atual']);
-    return idx >= 1;
-  }).length;
-  const reuAg = rows.filter(r => {
-    const idx = ETAPA_ORDER.indexOf(r['Etapa Atual']);
-    return idx >= 2;
-  }).length;
-  const reuRe = rows.filter(r => {
-    const idx = ETAPA_ORDER.indexOf(r['Etapa Atual']);
-    return idx >= 3;
-  }).length;
-  const prop = rows.filter(r => {
-    const idx = ETAPA_ORDER.indexOf(r['Etapa Atual']);
-    return idx >= 4;
-  }).length;
-  const vendas = rows.filter(r => r['Etapa Atual'] === 'Venda Fechada').length;
-  const perdidos = rows.filter(r => r['Status'] === 'Perdido').length;
-  const receita = rows.reduce((s, r) => s + (parseFloat(r['Valor Vendido']) || 0), 0);
-  const ticket = vendas ? receita / vendas : 0;
-  const convTotal = pct(vendas, total);
+  const total     = rows.length;
+  const realizados = rows.filter(r => getStatus(r) === 'sim' || comprou(r)).length;
+  const noshow    = rows.filter(r => getStatus(r) === 'noshow').length;
+  const vendas    = rows.filter(r => comprou(r)).length;
+  const receita   = rows.filter(r => comprou(r)).reduce((s,r) => s + getPreco(r), 0);
+  const ticket    = vendas ? receita / vendas : 0;
+  const conv      = pct(vendas, realizados);
 
   const kpis = [
-    { icon: '👥', label: 'Leads Gerados', value: total, delta: null, hi: false },
-    { icon: '✅', label: 'Qualificados', value: qual, delta: pct(qual, total) + '% dos leads', hi: false },
-    { icon: '📅', label: 'Reuniões Agendadas', value: reuAg, delta: pct(reuAg, qual) + '% dos qualif.', hi: false },
-    { icon: '🤝', label: 'Reuniões Realizadas', value: reuRe, delta: pct(reuRe, reuAg) + '% das agendadas', hi: false },
-    { icon: '📄', label: 'Propostas Enviadas', value: prop, delta: pct(prop, reuRe) + '% das reuniões', hi: false },
-    { icon: '💰', label: 'Vendas Fechadas', value: vendas, delta: convTotal + '% conv. total', hi: true },
-    { icon: '💵', label: 'Receita Total', value: fmtMoney(receita), delta: null, hi: true },
-    { icon: '🎯', label: 'Ticket Médio', value: fmtMoney(ticket), delta: null, hi: false },
+    { icon:'📅', label:'Agendamentos', value: total, delta: null, hi: false },
+    { icon:'🤝', label:'Realizadas',   value: realizados, delta: pct(realizados, total) + '% dos agend.', hi: false },
+    { icon:'❌', label:'No Show',       value: noshow, delta: pct(noshow, total) + '% dos agend.', hi: false, bad: true },
+    { icon:'💰', label:'Vendas',        value: vendas, delta: conv + '% conv. reunião', hi: true },
+    { icon:'💵', label:'Receita Total', value: fmtMoney(receita), delta: null, hi: true },
+    { icon:'🎯', label:'Ticket Médio',  value: fmtMoney(ticket), delta: null, hi: false },
   ];
 
   document.getElementById('kpi-row').innerHTML = kpis.map(k => `
@@ -851,198 +484,185 @@ function renderKPIs() {
       <div class="kpi-icon">${k.icon}</div>
       <div class="kpi-value">${k.value}</div>
       <div class="kpi-label">${k.label}</div>
-      ${k.delta ? `<div class="kpi-delta">${k.delta}</div>` : ''}
+      ${k.delta ? `<div class="kpi-delta ${k.bad ? 'bad' : ''}">${k.delta}</div>` : ''}
     </div>
   `).join('');
 }
 
-// ─────────────────────────────────────────────
-// RENDER FUNIL
-// ─────────────────────────────────────────────
+// ── FUNIL ───────────────────────────────────────────────────
 function renderFunil() {
-  const counts = countByEtapa(FILTERED);
-  const max = counts['Lead'] || 1;
+  const rows = FILTERED;
+  const agendados  = rows.length;
+  const realizados = rows.filter(r => getStatus(r) === 'sim' || comprou(r)).length;
+  const propostas  = rows.filter(r => comprou(r) || (r['Pitch CLOSER'] || '').trim() !== '').length;
+  const vendas     = rows.filter(r => comprou(r)).length;
 
-  const stagesHTML = ETAPA_ORDER.map((etapa, i) => {
-    const count = counts[etapa];
-    const prev = i > 0 ? counts[ETAPA_ORDER[i-1]] : null;
-    const widthPct = Math.max(10, Math.round((count / max) * 100));
-    const convPct = prev !== null ? pct(count, prev) : null;
-    const perdidosStep = prev !== null ? prev - count : 0;
+  const stages = [
+    { label: 'Agendado',  count: agendados,  color: 'rgba(24,54,93,0.8)' },
+    { label: 'Realizado', count: realizados, color: 'rgba(200,92,31,0.6)' },
+    { label: 'Proposta',  count: propostas,  color: 'rgba(200,92,31,0.85)' },
+    { label: 'Venda',     count: vendas,     color: '#C85C1F' },
+  ];
 
+  const max = agendados || 1;
+  const html = stages.map((s, i) => {
+    const prev = i > 0 ? stages[i-1].count : null;
+    const w = Math.max(8, Math.round((s.count / max) * 100));
+    const c = prev !== null ? pct(s.count, prev) : null;
+    const lost = prev !== null ? prev - s.count : 0;
     return `
       <div class="funnel-stage">
         <div class="funnel-bar-wrap">
-          <div class="funnel-bar-label">${etapa}</div>
+          <div class="funnel-bar-label">${s.label}</div>
           <div class="funnel-bar-track">
-            <div class="funnel-bar-fill" style="width:${widthPct}%; background:${ETAPA_COLORS[etapa] || 'var(--blue)'}">
-              ${count}
-            </div>
+            <div class="funnel-bar-fill" style="width:${w}%;background:${s.color}">${s.count}</div>
           </div>
-          <div class="funnel-bar-count">${count}</div>
+          <div class="funnel-bar-count">${s.count}</div>
         </div>
-        ${convPct !== null ? `
+        ${c !== null ? `
           <div class="funnel-conversion">
-            <span class="funnel-arrow">↓</span>
-            <span class="funnel-conv-pct ${convColor(convPct)}">${convPct}% conversão</span>
-            ${perdidosStep > 0 ? `<span class="funnel-conv-lost">· -${perdidosStep} perdidos</span>` : ''}
-          </div>
-        ` : ''}
-      </div>
-    `;
+            <span>↓</span>
+            <span class="${convCls(c)}">${c}% conversão</span>
+            ${lost > 0 ? `<span class="conv-lost">· -${lost}</span>` : ''}
+          </div>` : ''}
+      </div>`;
   }).join('');
 
-  document.getElementById('funil-visual').innerHTML = stagesHTML;
+  document.getElementById('funil-visual').innerHTML = html;
 
-  // bottleneck = etapa com maior queda percentual
-  let worstEtapa = '-', worstDrop = 0;
-  for (let i = 1; i < ETAPA_ORDER.length; i++) {
-    const curr = counts[ETAPA_ORDER[i]];
-    const prev = counts[ETAPA_ORDER[i-1]];
-    if (prev) {
-      const drop = 100 - pct(curr, prev);
-      if (drop > worstDrop) { worstDrop = drop; worstEtapa = ETAPA_ORDER[i]; }
-    }
+  const noshow   = rows.filter(r => getStatus(r) === 'noshow').length;
+  const cancel   = rows.filter(r => getStatus(r) === 'cancel').length;
+  const convFinal = pct(vendas, realizados);
+
+  // bottleneck
+  let worstLabel = '-', worstDrop = 0;
+  for (let i = 1; i < stages.length; i++) {
+    const drop = 100 - pct(stages[i].count, stages[i-1].count);
+    if (drop > worstDrop && stages[i-1].count > 0) { worstDrop = drop; worstLabel = stages[i].label; }
   }
 
-  const perdidos = FILTERED.filter(r => r['Status'] === 'Perdido').length;
-  const convGlobal = pct(counts['Venda Fechada'], counts['Lead']);
-
   document.getElementById('funil-side').innerHTML = `
-    <div class="funnel-stat-card">
-      <div class="funnel-stat-info">
-        <div class="funnel-stat-label">Conversão Total</div>
-        <div class="funnel-stat-value">${convGlobal}%</div>
-        <div class="funnel-stat-sub">Lead → Venda</div>
+    <div class="stat-card">
+      <div>
+        <div class="stat-label">Conversão Final</div>
+        <div class="stat-value">${convFinal}%</div>
+        <div class="stat-sub">Reunião → Venda</div>
       </div>
     </div>
-    <div class="funnel-stat-card">
-      <div class="funnel-stat-info">
-        <div class="funnel-stat-label">Maior Gargalo</div>
-        <div class="funnel-stat-value" style="font-size:1rem; color:var(--red)">${worstEtapa}</div>
-        <div class="funnel-stat-sub">-${worstDrop}% nesta etapa</div>
+    <div class="stat-card">
+      <div>
+        <div class="stat-label">Maior Gargalo</div>
+        <div class="stat-value" style="font-size:1rem;color:var(--red)">${worstLabel}</div>
+        <div class="stat-sub">-${worstDrop}% nesta etapa</div>
       </div>
-      <div class="bottleneck-badge">Atenção</div>
+      <div class="badge-atencao">Atenção</div>
     </div>
-    <div class="funnel-stat-card">
-      <div class="funnel-stat-info">
-        <div class="funnel-stat-label">Perdidos</div>
-        <div class="funnel-stat-value">${perdidos}</div>
-        <div class="funnel-stat-sub">${pct(perdidos, FILTERED.length)}% do total</div>
-      </div>
-    </div>
-    <div class="funnel-stat-card">
-      <div class="funnel-stat-info">
-        <div class="funnel-stat-label">Qualif. → Reunião</div>
-        <div class="funnel-stat-value">${pct(counts['Reunião Agendada'], counts['Qualificado'])}%</div>
-        <div class="funnel-stat-sub">Taxa SDR</div>
+    <div class="stat-card">
+      <div>
+        <div class="stat-label">No Show</div>
+        <div class="stat-value">${noshow}</div>
+        <div class="stat-sub">${pct(noshow, agendados)}% dos agendamentos</div>
       </div>
     </div>
-    <div class="funnel-stat-card">
-      <div class="funnel-stat-info">
-        <div class="funnel-stat-label">Reunião → Venda</div>
-        <div class="funnel-stat-value">${pct(counts['Venda Fechada'], counts['Reunião Realizada'])}%</div>
-        <div class="funnel-stat-sub">Taxa Closer</div>
+    <div class="stat-card">
+      <div>
+        <div class="stat-label">Cancelamentos</div>
+        <div class="stat-value">${cancel}</div>
+        <div class="stat-sub">${pct(cancel, agendados)}% dos agendamentos</div>
       </div>
     </div>
   `;
 }
 
-// ─────────────────────────────────────────────
-// RENDER EQUIPE
-// ─────────────────────────────────────────────
-function switchTab(tab) {
+// ── EQUIPE ───────────────────────────────────────────────────
+function switchTab(tab, el) {
   CURRENT_TAB = tab;
   document.querySelectorAll('.team-tab').forEach(t => t.classList.remove('active'));
-  event.target.classList.add('active');
+  el.classList.add('active');
   renderEquipe();
 }
 
 function renderEquipe() {
-  const rows = FILTERED;
+  const TEAM = {
+    'SHEILA':  { role: 'SS' },
+    'DR MARIA':{ role: 'SDR' },
+    'DRA MARIA':{ role: 'SDR' },
+    'IZABEL':  { role: 'SDR' },
+    'ERICA':   { role: 'Closer' },
+  };
 
-  // coletar pessoas e papéis
   const pessoas = {};
-  rows.forEach(r => {
-    ['Social Seller', 'SDR', 'Closer'].forEach(papel => {
-      const nome = r[papel];
+
+  FILTERED.forEach(r => {
+    const closer   = (r['Closer'] || '').trim().toUpperCase();
+    const prevendas = (r['Nome (PRÉ VENDAS)'] || r['Nome (PRE VENDAS)'] || '').trim().toUpperCase();
+
+    [closer, prevendas].forEach(nome => {
       if (!nome) return;
-      const role = papel === 'Social Seller' ? 'SS' : papel;
+      const info = TEAM[nome];
+      if (!info) return;
+      const role = info.role;
       if (CURRENT_TAB !== 'todos' && role !== CURRENT_TAB) return;
-      if (!pessoas[nome]) pessoas[nome] = { nome, role, total: 0, qualificados: 0, reunioes: 0, vendas: 0, receita: 0 };
+      if (!pessoas[nome]) pessoas[nome] = { nome, role, total: 0, realizados: 0, vendas: 0, receita: 0 };
       pessoas[nome].total++;
-      const eIdx = ETAPA_ORDER.indexOf(r['Etapa Atual']);
-      if (eIdx >= 1) pessoas[nome].qualificados++;
-      if (eIdx >= 3) pessoas[nome].reunioes++;
-      if (r['Etapa Atual'] === 'Venda Fechada') {
+      if (getStatus(r) === 'sim' || comprou(r)) pessoas[nome].realizados++;
+      if (comprou(r)) {
         pessoas[nome].vendas++;
-        pessoas[nome].receita += parseFloat(r['Valor Vendido']) || 0;
+        pessoas[nome].receita += getPreco(r);
       }
     });
   });
 
-  const lista = Object.values(pessoas).sort((a, b) => b.receita - a.receita || b.vendas - a.vendas);
+  const lista = Object.values(pessoas).sort((a,b) => b.receita - a.receita || b.vendas - a.vendas);
 
   if (!lista.length) {
-    document.getElementById('team-body').innerHTML = '<div class="empty-state">Nenhum dado para exibir com os filtros selecionados.</div>';
+    document.getElementById('team-body').innerHTML = '<div class="empty-state">Nenhum dado para os filtros selecionados.</div>';
     return;
   }
 
-  const roleLabel = { SS: 'Social Seller', SDR: 'SDR', Closer: 'Closer' };
-  const roleCls = { SS: 'role-ss', SDR: 'role-sdr', Closer: 'role-closer' };
+  const roleLabel = { SS: 'Social Seller', SDR: 'SDR / Pré-Vendas', Closer: 'Closer' };
+  const roleCls   = { SS: 'role-ss', SDR: 'role-sdr', Closer: 'role-closer' };
 
   document.getElementById('team-body').innerHTML = `
     <table class="team-table">
-      <thead>
-        <tr>
-          <th>Colaborador</th>
-          <th>Leads</th>
-          <th>Qualif.</th>
-          <th>Reuniões</th>
-          <th>Vendas</th>
-          <th>Receita</th>
-          <th>Conv.</th>
-        </tr>
-      </thead>
+      <thead><tr>
+        <th>Colaborador</th>
+        <th>Agend.</th>
+        <th>Realizadas</th>
+        <th>Vendas</th>
+        <th>Receita</th>
+        <th>Conv.</th>
+      </tr></thead>
       <tbody>
         ${lista.map(p => {
-          const conv = pct(p.vendas, p.total);
-          return `
-            <tr>
-              <td>
-                <div class="td-name">${p.nome}</div>
-                <div style="margin-top:3px"><span class="role-badge ${roleCls[p.role]}">${roleLabel[p.role]}</span></div>
-              </td>
-              <td class="td-num">${p.total}</td>
-              <td class="td-num">${p.qualificados}</td>
-              <td class="td-num">${p.reunioes}</td>
-              <td class="td-num">${p.vendas}</td>
-              <td class="td-money">${fmtMoney(p.receita)}</td>
-              <td class="td-pct ${convColor(conv)}">${conv}%</td>
-            </tr>
-          `;
+          const conv = pct(p.vendas, p.realizados);
+          return `<tr>
+            <td>
+              <div style="font-weight:600;color:var(--text)">${p.nome}</div>
+              <div style="margin-top:3px"><span class="role-badge ${roleCls[p.role]}">${roleLabel[p.role]}</span></div>
+            </td>
+            <td style="color:var(--text-muted);text-align:center">${p.total}</td>
+            <td style="color:var(--text-muted);text-align:center">${p.realizados}</td>
+            <td style="color:var(--text-muted);text-align:center">${p.vendas}</td>
+            <td class="td-money" style="text-align:center">${fmtMoney(p.receita)}</td>
+            <td class="td-pct ${pctCls(conv)}" style="text-align:center">${conv}%</td>
+          </tr>`;
         }).join('')}
       </tbody>
-    </table>
-  `;
+    </table>`;
 }
 
-// ─────────────────────────────────────────────
-// RENDER CHARTS
-// ─────────────────────────────────────────────
-function groupByPeriod(rows, field, period) {
+// ── CHARTS ───────────────────────────────────────────────────
+function groupByPeriod(rows, period) {
   const groups = {};
   rows.forEach(r => {
-    const raw = r[field];
-    if (!raw) return;
-    const d = raw instanceof Date ? raw : new Date(raw);
-    if (isNaN(d)) return;
+    const d = getDataRaw(r);
+    if (!d) return;
     let key;
     if (period === 'dia') key = d.toLocaleDateString('pt-BR');
     else if (period === 'semana') {
-      const start = new Date(d);
-      start.setDate(d.getDate() - d.getDay());
-      key = start.toLocaleDateString('pt-BR');
+      const s = new Date(d); s.setDate(d.getDate() - d.getDay());
+      key = s.toLocaleDateString('pt-BR');
     } else {
       key = `${d.getMonth()+1}/${d.getFullYear().toString().slice(2)}`;
     }
@@ -1052,137 +672,115 @@ function groupByPeriod(rows, field, period) {
   return groups;
 }
 
-function renderChartLeads() {
-  const groups = groupByPeriod(FILTERED, 'Data Entrada', PERIOD_LEADS);
+function renderChartAg() {
+  const groups = groupByPeriod(FILTERED, PERIOD_AG);
   const keys = Object.keys(groups).slice(-12);
-  const maxLeads = Math.max(...keys.map(k => groups[k].length), 1);
-
-  document.getElementById('chart-leads').innerHTML = keys.map(k => {
-    const leads = groups[k].length;
-    const vendas = groups[k].filter(r => r['Etapa Atual'] === 'Venda Fechada').length;
-    const hLeads = Math.round((leads / maxLeads) * 130);
-    const hVendas = Math.round((vendas / maxLeads) * 130);
-    return `
-      <div class="bar-item" style="flex:1">
-        <div style="display:flex;align-items:flex-end;gap:2px;height:130px">
-          <div class="bar-fill" style="height:${hLeads}px; background:rgba(24,54,93,0.8); flex:1" data-tip="${leads} leads"></div>
-          <div class="bar-fill" style="height:${hVendas}px; background:var(--blue); flex:1" data-tip="${vendas} vendas"></div>
-        </div>
-        <div class="bar-x">${k}</div>
+  const maxV = Math.max(...keys.map(k => groups[k].length), 1);
+  document.getElementById('chart-ag').innerHTML = keys.map(k => {
+    const ag = groups[k].length;
+    const vd = groups[k].filter(r => comprou(r)).length;
+    const hA = Math.round((ag/maxV)*130);
+    const hV = Math.round((vd/maxV)*130);
+    return `<div class="bar-item" style="flex:1">
+      <div style="display:flex;align-items:flex-end;gap:2px;height:130px">
+        <div class="bar-fill" style="height:${hA}px;background:rgba(24,54,93,0.8);flex:1" data-tip="${ag} agend."></div>
+        <div class="bar-fill" style="height:${hV}px;background:var(--green);flex:1" data-tip="${vd} vendas"></div>
       </div>
-    `;
-  }).join('') || '<div style="color:var(--text-dim);font-size:12px;margin:auto">Sem dados suficientes</div>';
+      <div class="bar-x">${k}</div>
+    </div>`;
+  }).join('') || '<div style="color:var(--text-dim);font-size:12px;margin:auto">Sem dados</div>';
 }
 
-function renderChartReceita() {
-  const groups = groupByPeriod(FILTERED, 'Data Venda', PERIOD_RECEITA);
+function renderChartRec() {
+  const groups = groupByPeriod(FILTERED, PERIOD_REC);
   const keys = Object.keys(groups).slice(-12);
-  const maxR = Math.max(...keys.map(k => groups[k].reduce((s,r) => s + (parseFloat(r['Valor Vendido'])||0), 0)), 1);
-
-  document.getElementById('chart-receita').innerHTML = keys.map(k => {
-    const rec = groups[k].reduce((s,r) => s + (parseFloat(r['Valor Vendido'])||0), 0);
-    const h = Math.round((rec / maxR) * 130);
-    return `
-      <div class="bar-item" style="flex:1">
-        <div style="height:130px; display:flex; align-items:flex-end">
-          <div class="bar-fill" style="height:${h}px; background:rgba(200,92,31,0.6); width:100%; border-radius:4px 4px 0 0" data-tip="${fmtMoney(rec)}"></div>
-        </div>
-        <div class="bar-x">${k}</div>
+  const maxV = Math.max(...keys.map(k => groups[k].filter(r=>comprou(r)).reduce((s,r)=>s+getPreco(r),0)), 1);
+  document.getElementById('chart-rec').innerHTML = keys.map(k => {
+    const rec = groups[k].filter(r=>comprou(r)).reduce((s,r)=>s+getPreco(r),0);
+    const h = Math.round((rec/maxV)*130);
+    return `<div class="bar-item" style="flex:1">
+      <div style="height:130px;display:flex;align-items:flex-end">
+        <div class="bar-fill" style="height:${h}px;background:rgba(200,92,31,0.7);width:100%" data-tip="${fmtMoney(rec)}"></div>
       </div>
-    `;
-  }).join('') || '<div style="color:var(--text-dim);font-size:12px;margin:auto">Sem dados de venda</div>';
+      <div class="bar-x">${k}</div>
+    </div>`;
+  }).join('') || '<div style="color:var(--text-dim);font-size:12px;margin:auto">Sem dados</div>';
 }
 
 function switchPeriod(p, btn) {
-  PERIOD_LEADS = p;
+  PERIOD_AG = p;
   btn.closest('.period-btns').querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  renderChartLeads();
+  renderChartAg();
 }
-
 function switchPeriodR(p, btn) {
-  PERIOD_RECEITA = p;
+  PERIOD_REC = p;
   btn.closest('.period-btns').querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  renderChartReceita();
+  renderChartRec();
 }
 
-// ─────────────────────────────────────────────
-// RENDER RECENTES
-// ─────────────────────────────────────────────
-const ETAPA_CLS = {
-  'Lead': 'etapa-lead', 'Qualificado': 'etapa-qual',
-  'Reunião Agendada': 'etapa-reu-ag', 'Reunião Realizada': 'etapa-reu-re',
-  'Proposta Enviada': 'etapa-prop', 'Venda Fechada': 'etapa-venda', 'Perdido': 'etapa-perdido',
-};
-const TEMP_CLS = { 'Quente': 'temp-quente', 'Morno': 'temp-morno', 'Frio': 'temp-frio' };
+// ── RECENTES ─────────────────────────────────────────────────
+const STATUS_CLS = { sim:'s-sim', noshow:'s-noshow', cancel:'s-cancel', reagend:'s-reagend', outro:'s-outro' };
+const STATUS_LBL = { sim:'Realizada', noshow:'No Show', cancel:'Cancelado', reagend:'Reagendado', outro:'-' };
 
 function renderRecent() {
   const rows = [...FILTERED]
-    .filter(r => r['Data Entrada'])
-    .sort((a, b) => {
-      const da = a['Data Entrada'] instanceof Date ? a['Data Entrada'] : new Date(a['Data Entrada']);
-      const db = b['Data Entrada'] instanceof Date ? b['Data Entrada'] : new Date(b['Data Entrada']);
-      return db - da;
+    .sort((a,b) => {
+      const da = getDataRaw(a), db = getDataRaw(b);
+      return (db||0) - (da||0);
     })
-    .slice(0, 20);
+    .slice(0, 25);
 
-  document.getElementById('recent-count').textContent = `${rows.length} de ${FILTERED.length} leads`;
+  document.getElementById('recent-count').textContent = `${rows.length} de ${FILTERED.length}`;
 
   if (!rows.length) {
-    document.getElementById('recent-body').innerHTML = '<div class="empty-state">Nenhum lead encontrado.</div>';
+    document.getElementById('recent-body').innerHTML = '<div class="empty-state">Nenhum registro encontrado.</div>';
     return;
   }
 
   document.getElementById('recent-body').innerHTML = `
-    <table class="recent-table">
-      <thead>
-        <tr>
-          <th>Nome</th>
-          <th>Entrada</th>
-          <th>Origem</th>
-          <th>Social Seller</th>
-          <th>SDR</th>
-          <th>Closer</th>
-          <th>Etapa</th>
-          <th>Temperatura</th>
-          <th>Valor Proposta</th>
-        </tr>
-      </thead>
+    <table class="r-table">
+      <thead><tr>
+        <th>Nome</th>
+        <th>Data Reunião</th>
+        <th>Closer</th>
+        <th>Pré-Vendas</th>
+        <th>Produto</th>
+        <th>Status</th>
+        <th>Receita</th>
+      </tr></thead>
       <tbody>
-        ${rows.map(r => `
-          <tr>
-            <td style="font-weight:600;color:var(--text)">${r['Nome Completo'] || '-'}</td>
-            <td style="color:var(--text-muted)">${fmtDate(r['Data Entrada'])}</td>
-            <td style="color:var(--text-muted)">${r['Origem'] || '-'}</td>
-            <td style="color:var(--text-muted)">${r['Social Seller'] || '-'}</td>
-            <td style="color:var(--text-muted)">${r['SDR'] || '-'}</td>
+        ${rows.map(r => {
+          const st = getStatus(r);
+          const prod = (r['Produto Vendido'] || r['Último Funil'] || '').trim();
+          const comp = comprou(r);
+          const preco = comp ? getPreco(r) : 0;
+          return `<tr>
+            <td style="font-weight:600;color:var(--text)">${r['Nome'] || '-'}</td>
+            <td style="color:var(--text-muted)">${fmtDate(getDataRaw(r))}</td>
             <td style="color:var(--text-muted)">${r['Closer'] || '-'}</td>
-            <td><span class="etapa-badge ${ETAPA_CLS[r['Etapa Atual']] || 'etapa-lead'}">${r['Etapa Atual'] || '-'}</span></td>
-            <td>${r['Temperatura'] ? `<span class="temp-badge ${TEMP_CLS[r['Temperatura']] || ''}">${r['Temperatura']}</span>` : '-'}</td>
-            <td style="color:var(--blue-light);font-weight:600">${r['Valor Proposta'] ? fmtMoney(r['Valor Proposta']) : '-'}</td>
-          </tr>
-        `).join('')}
+            <td style="color:var(--text-muted)">${r['Nome (PRÉ VENDAS)'] || r['Nome (PRE VENDAS)'] || '-'}</td>
+            <td>${prod ? `<span class="prod-badge">${prod}</span>` : '-'}</td>
+            <td><span class="status-badge ${comp ? 's-sim' : STATUS_CLS[st]}">${comp ? 'Comprou' : STATUS_LBL[st]}</span></td>
+            <td style="color:var(--blue-light);font-weight:600">${preco ? fmtMoney(preco) : '-'}</td>
+          </tr>`;
+        }).join('')}
       </tbody>
-    </table>
-  `;
+    </table>`;
 }
 
-// ─────────────────────────────────────────────
-// RENDER ALL
-// ─────────────────────────────────────────────
+// ── RENDER ALL ───────────────────────────────────────────────
 function renderAll() {
   renderKPIs();
   renderFunil();
   renderEquipe();
-  renderChartLeads();
-  renderChartReceita();
+  renderChartAg();
+  renderChartRec();
   renderRecent();
 }
 
-// ─────────────────────────────────────────────
-// INIT
-// ─────────────────────────────────────────────
+// ── INIT ─────────────────────────────────────────────────────
 function updateTime() {
   const now = new Date();
   const fmt = n => String(n).padStart(2,'0');
@@ -1192,62 +790,20 @@ function updateTime() {
 }
 
 async function init() {
-  const data = await fetchSheet();
-  ALL_ROWS = data || [];
-
-  populateFilters();
-  applyFilters(); // aplica filtro padrão (30 dias)
+  const data = await fetchData();
+  ALL = data || [];
+  applyFilters();
   updateTime();
-
-  // intersection observer para fade-in
   const obs = new IntersectionObserver(entries => {
     entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
   }, { threshold: 0.05 });
   document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
 }
 
-// ─────────────────────────────────────────────
-// MOCK DATA (remova quando conectar a planilha)
-// ─────────────────────────────────────────────
-function generateMockData() {
-  const ss = ['Ana Costa'];
-  const sdrs = ['Bruno Lima'];
-  const closers = ['Carla Souza'];
-  const etapas = ['Lead','Qualificado','Reunião Agendada','Reunião Realizada','Proposta Enviada','Venda Fechada','Perdido'];
-  const origens = ['Instagram','Tráfego Pago','Indicação','Orgânico'];
-  const temps = ['Quente','Morno','Frio'];
-  const rows = [];
-  for (let i = 1; i <= 80; i++) {
-    const daysAgo = Math.floor(Math.random() * 90);
-    const entrada = new Date(Date.now() - daysAgo * 86400000);
-    const eIdx = Math.floor(Math.random() ** 1.5 * etapas.length);
-    const etapa = etapas[Math.min(eIdx, etapas.length - 1)];
-    const vendida = etapa === 'Venda Fechada';
-    rows.push({
-      'ID': i,
-      'Data Entrada': entrada,
-      'Nome Completo': `Lead ${i}`,
-      'Telefone': '11999999999',
-      'Origem': origens[Math.floor(Math.random() * origens.length)],
-      'Social Seller': ss[0],
-      'SDR': sdrs[0],
-      'Closer': etapa !== 'Lead' && etapa !== 'Qualificado' ? closers[0] : null,
-      'Etapa Atual': etapa,
-      'Temperatura': temps[Math.floor(Math.random() * temps.length)],
-      'Status': etapa === 'Perdido' ? 'Perdido' : vendida ? 'Ganho' : 'Aberto',
-      'Valor Proposta': vendida || etapa === 'Proposta Enviada' ? 2000 + Math.floor(Math.random() * 8000) : null,
-      'Valor Vendido': vendida ? 2000 + Math.floor(Math.random() * 8000) : null,
-      'Data Reunião': etapa !== 'Lead' && etapa !== 'Qualificado' ? new Date(entrada.getTime() + 3 * 86400000) : null,
-      'Data Venda': vendida ? new Date(entrada.getTime() + 7 * 86400000) : null,
-    });
-  }
-  return rows;
-}
-
 init();
 setInterval(async () => {
-  const data = await fetchSheet();
-  if (data && data.length) { ALL_ROWS = data; applyFilters(); updateTime(); }
+  const data = await fetchData();
+  if (data) { ALL = data; applyFilters(); updateTime(); }
 }, REFRESH_INTERVAL);
 </script>
 </body>
