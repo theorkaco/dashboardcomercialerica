@@ -340,7 +340,7 @@ footer { border-top: 1px solid var(--border-light); padding: 1rem clamp(1rem,3vw
 
 <script>
 // ── CONFIG ──────────────────────────────────────────────────
-const PROXY_URL = 'https://script.google.com/macros/s/AKfycbwsQDJ1oaddTMBFuo4NCFiUV0WJPK-2d_no1X1cQyn9Dg8oRz5v1L-S_TzBp3pq6PYW/exec';
+const PROXY_URL = 'https://script.google.com/macros/s/AKfycbx3b2bcY0FerBkjsHK1dGekQTrS3DJJcf63RHhspX7ce2AAdA_7uoxZC6wk5AtFjm_iEA/exec';
 const REFRESH_INTERVAL = 5 * 60 * 1000;
 
 // Preços dos produtos
@@ -372,7 +372,8 @@ async function fetchData() {
 
 // ── HELPERS ─────────────────────────────────────────────────
 function comprou(r) {
-  return (r['Produto Vendido'] || '').trim() !== '';
+  const prod = (r['Produto Vendido'] || '').trim().toUpperCase();
+  return prod !== '' && prod !== 'NENHUM';
 }
 
 function getPreco(r) {
