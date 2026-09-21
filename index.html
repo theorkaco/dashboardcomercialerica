@@ -396,6 +396,7 @@ function comprou(r) {
 }
 
 function getPreco(r) {
+  if (r['_valorReal'] && r['_valorReal'] > 0) return r['_valorReal'];
   const prod = (r['Produto Vendido'] || r['Último Funil'] || '').toUpperCase().trim();
   return PRECOS[prod] || 0;
 }
@@ -413,12 +414,12 @@ function getStatus(r) {
 function getDataRaw(r) {
   const v = r['  Agendamento\npara o dia'] || r['Agendamento no dia:'] || '';
   if (!v) return null;
-  // formato dd/MM/yyyy vindo do Apps Script
-  if (typeof v === 'string' && v.includes('/')) {
+  // formato dd/MM/yyyy
+  if (typeof v === 'string' && /^\d{2}\/\d{2}\/\d{4}$/.test(v)) {
     const [dd, mm, yyyy] = v.split('/');
-    const d = new Date(+yyyy, +mm - 1, +dd);
-    return isNaN(d) ? null : d;
+    return new Date(+yyyy, +mm - 1, +dd);
   }
+  // formato ISO 2026-08-11T07:00:00.000Z
   const d = new Date(v);
   return isNaN(d) ? null : d;
 }
