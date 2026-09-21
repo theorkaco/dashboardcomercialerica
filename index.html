@@ -242,6 +242,25 @@ footer { border-top: 1px solid var(--border-light); padding: 1rem clamp(1rem,3vw
 
 <div class="main">
 
+  <!-- META -->
+  <div class="fade-in" id="meta-section">
+    <div style="background:var(--bg2);border:1px solid var(--border-light);border-radius:16px;padding:1.25rem 1.5rem;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;">
+        <div>
+          <div class="section-label">Meta do Mês</div>
+          <div style="font-family:'Montserrat',sans-serif;font-size:1.1rem;font-weight:600;color:var(--cream)" id="meta-label">R$ 0 de R$ 100k</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-family:'Montserrat',sans-serif;font-size:2rem;font-weight:300;color:var(--cream)" id="meta-pct">0%</div>
+          <div style="font-size:11px;color:var(--text-dim)">da meta atingida</div>
+        </div>
+      </div>
+      <div style="background:var(--bg4);border-radius:6px;height:10px;overflow:hidden;">
+        <div id="meta-bar" style="height:100%;background:linear-gradient(90deg,var(--navy),var(--blue));border-radius:6px;width:0%;transition:width 1.2s cubic-bezier(0.16,1,0.3,1);"></div>
+      </div>
+    </div>
+  </div>
+
   <div class="kpi-row fade-in" id="kpi-row">
     <div class="loading-state"><div class="spinner"></div></div>
   </div>
@@ -392,9 +411,14 @@ function getStatus(r) {
 }
 
 function getDataRaw(r) {
-  // usa "Agendamento para o dia" como data principal
   const v = r['  Agendamento\npara o dia'] || r['Agendamento no dia:'] || '';
   if (!v) return null;
+  // formato dd/MM/yyyy vindo do Apps Script
+  if (typeof v === 'string' && v.includes('/')) {
+    const [dd, mm, yyyy] = v.split('/');
+    const d = new Date(+yyyy, +mm - 1, +dd);
+    return isNaN(d) ? null : d;
+  }
   const d = new Date(v);
   return isNaN(d) ? null : d;
 }
@@ -482,8 +506,15 @@ function renderKPIs() {
     { icon:'🎯', label:'Ticket Médio',  value: fmtMoney(ticket), delta: null, hi: false },
   ];
 
+  // Meta
+  const META = 100000;
+  const pctMeta = Math.min(Math.round((receita / META) * 100), 100);
+  document.getElementById('meta-label').textContent = `${fmtMoney(receita)} de ${fmtMoney(META)}`;
+  document.getElementById('meta-pct').textContent = pctMeta + '%';
+  document.getElementById('meta-bar').style.width = pctMeta + '%';
+
   document.getElementById('kpi-row').innerHTML = kpis.map(k => `
-    <div class="kpi-card ${k.hi ? 'highlight' : ''}">
+  <div class="kpi-card ${k.hi ? 'highlight' : ''}">
       <div class="kpi-icon">${k.icon}</div>
       <div class="kpi-value">${k.value}</div>
       <div class="kpi-label">${k.label}</div>
@@ -587,12 +618,13 @@ function switchTab(tab, el) {
 
 function renderEquipe() {
   const TEAM = {
-    'SHEILA':  { role: 'SS' },
-    'DR MARIA':{ role: 'SDR' },
-    'DRA MARIA':{ role: 'SDR' },
-    'IZABEL':  { role: 'SDR' },
-    'ERICA':   { role: 'Closer' },
-  };
+  'SHEILA':      { role: 'SS' },
+  'MARIA':       { role: 'SDR' },
+  'MARIA & SHEILA': { role: 'SDR' },
+  'IZABEL':      { role: 'SDR' },
+  'OLIVER':       { role: 'Closer' },
+  'ERICA':       { role: 'Closer' },
+};
 
   const pessoas = {};
 
