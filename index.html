@@ -396,7 +396,10 @@ function comprou(r) {
 }
 
 function getPreco(r) {
-  if (r['_valorReal'] && r['_valorReal'] > 0) return r['_valorReal'];
+  if (r['_valorReal'] && r['_valorReal'] > 0) {
+    const v = parseFloat(String(r['_valorReal']).replace(',', '.'));
+    return v >= 100 ? v : v * 1000; // corrige 3.497 → 3497
+  }
   const prod = (r['Produto Vendido'] || r['Último Funil'] || '').toUpperCase().trim();
   return PRECOS[prod] || 0;
 }
@@ -412,7 +415,7 @@ function getStatus(r) {
 }
 
 function getDataRaw(r) {
-  const v = r['  Agendamento\npara o dia'] || r['Agendamento no dia:'] || '';
+  const v = r['  Agendamento\npara o dia'] || r['Agendamento no dia:'] || r['Agendamento no dia'] || '';
   if (!v) return null;
   // formato dd/MM/yyyy
   if (typeof v === 'string' && /^\d{2}\/\d{2}\/\d{4}$/.test(v)) {
