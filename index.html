@@ -740,7 +740,11 @@ function periodKey(d, period) {
 
 function renderChartAg() {
   const groups = groupAg(FILTERED_AG, PERIOD_AG);
-  const keys = Object.keys(groups).slice(-12);
+  const keys = Object.keys(groups).sort((a,b) => {
+    const [da,ma,ya] = a.split('/'); const [db,mb,yb] = b.split('/');
+    return new Date(`20${ya}-${ma}-${da}`) - new Date(`20${yb}-${mb}-${db}`);
+  }).slice(-12);
+  
   const maxV = Math.max(...keys.map(k => groups[k].length), 1);
   document.getElementById('chart-ag').innerHTML = keys.length ? keys.map(k => {
     const ag = groups[k].length;
@@ -759,7 +763,10 @@ function renderChartAg() {
 
 function renderChartRec() {
   const groups = groupVd(FILTERED_VD, PERIOD_REC);
-  const keys = Object.keys(groups).slice(-12);
+  const keys = Object.keys(groups).sort((a,b) => {
+    const [da,ma,ya] = a.split('/'); const [db,mb,yb] = b.split('/');
+    return new Date(`20${ya}-${ma}-${da}`) - new Date(`20${yb}-${mb}-${db}`);
+  }).slice(-12);
   const maxV = Math.max(...keys.map(k => groups[k].reduce((s,v) => s + parseValor(v['_valor'] || v['Valor da Venda'] || 0), 0)), 1);
   document.getElementById('chart-rec').innerHTML = keys.length ? keys.map(k => {
     const rec = groups[k].reduce((s,v) => s + parseValor(v['_valor'] || v['Valor da Venda'] || 0), 0);
