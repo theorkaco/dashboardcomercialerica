@@ -102,6 +102,7 @@ select:hover, select:focus { border-color: var(--border); color: var(--text); }
 
 /* EQUIPE */
 .team-section { background: var(--bg2); border: 1px solid var(--border-light); border-radius: 16px; overflow: hidden; }
+.team-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 .team-tabs { display: flex; border-bottom: 1px solid var(--border-light); padding: 0 1.5rem; }
 .team-tab { font-size: 12px; font-weight: 600; padding: 14px 16px; color: var(--text-dim); border-bottom: 2px solid transparent; cursor: pointer; transition: all .2s; letter-spacing: .04em; text-transform: uppercase; }
 .team-tab:hover { color: var(--text-muted); }
@@ -296,7 +297,7 @@ footer { border-top: 1px solid var(--border-light); padding: 1rem clamp(1rem,3vw
         <div class="team-tab" onclick="switchTab('SDR',this)">SDR</div>
         <div class="team-tab" onclick="switchTab('Closer',this)">Closer</div>
       </div>
-      <div id="team-body"><div class="loading-state"><div class="spinner"></div></div></div>
+      <div class="team-table-wrap"><div id="team-body"><div class="loading-state"><div class="spinner"></div></div></div></div>
     </div>
   </div>
 
