@@ -532,7 +532,11 @@ function renderFunil() {
   const rows = FILTERED;
   const agendados  = rows.length;
   const realizados = rows.filter(r => getStatus(r) === 'compareceu' || comprou(r)).length;
-  const propostas  = rows.filter(r => (r['Pitch CLOSER'] || '').trim() !== '').length;
+  const propostas = rows.filter(r => {
+  const compareceu = getStatus(r) === 'compareceu' || comprou(r);
+  const pitch = (r['Pitch CLOSER'] || '').trim().toUpperCase();
+  return compareceu && pitch !== '' && pitch !== 'NENHUM';
+}).length;
   const vendas     = rows.filter(r => comprou(r)).length;
 
   const stages = [
@@ -695,8 +699,13 @@ function renderEquipe() {
 function groupByPeriod(rows, period) {
   const groups = {};
   rows.forEach(r => {
-    const d = getDataRaw(r);
-    if (!d) return;
+    let d = getDataRaw(r);
+    if (!d) {
+      // tenta data de agendamento como fallback
+      const v = r['Agendamento no dia:'] || '';
+      if (v) d = new Date(v);
+    }
+    if (!d || isNaN(d)) return;
     let key;
     if (period === 'dia') key = d.toLocaleDateString('pt-BR');
     else if (period === 'semana') {
