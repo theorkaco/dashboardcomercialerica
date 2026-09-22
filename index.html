@@ -723,12 +723,19 @@ function groupVd(rows, period) {
 }
 
 function periodKey(d, period) {
-  if (period === 'dia') return d.toLocaleDateString('pt-BR');
+  const dd = String(d.getDate()).padStart(2,'0');
+  const mm = String(d.getMonth()+1).padStart(2,'0');
+  const yy = d.getFullYear().toString().slice(2);
+  if (period === 'dia') return `${dd}/${mm}/${yy}`;
   if (period === 'semana') {
-    const s = new Date(d); s.setDate(d.getDate() - d.getDay());
-    return s.toLocaleDateString('pt-BR');
+    const s = new Date(d);
+    s.setDate(d.getDate() - d.getDay());
+    const sd = String(s.getDate()).padStart(2,'0');
+    const sm = String(s.getMonth()+1).padStart(2,'0');
+    const sy = s.getFullYear().toString().slice(2);
+    return `${sd}/${sm}/${sy}`;
   }
-  return `${d.getMonth()+1}/${d.getFullYear().toString().slice(2)}`;
+  return `${mm}/${yy}`;
 }
 
 function renderChartAg() {
