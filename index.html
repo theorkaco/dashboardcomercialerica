@@ -630,12 +630,15 @@ function switchTab(tab, el) {
 
 function renderEquipe() {
   const TEAM = {
-    'SHEILA': { role: 'SS' }, 'LUANY': { role: 'SS' },
-    'MARIA': { role: 'SDR' }, 'DR MARIA': { role: 'SDR' }, 'DRA MARIA': { role: 'SDR' },
-    'MARIA & SHEILA': { role: 'SDR' }, 'SHEILA E MARIA': { role: 'SDR' },
-    'IZABEL': { role: 'SDR' },
-    'ERICA': { role: 'Closer' }, 'OLIVER': { role: 'Closer' },
-  };
+    const TEAM = {
+  'SHEILA': { role: 'SS' },
+  'LUANY': { role: 'SDR' },
+  'MARIA': { role: 'SDR' }, 'DR MARIA': { role: 'SDR' }, 'DRA MARIA': { role: 'SDR' },
+  'MARIA & SHEILA': { role: 'SDR' }, 'SHEILA E MARIA': { role: 'SDR' },
+  'SHEILA E LUANY': { role: 'SDR' },
+  'IZABEL': { role: 'SDR' },
+  'ERICA': { role: 'Closer' }, 'OLIVER': { role: 'Closer' },
+};
 
   const pessoas = {};
 
@@ -728,7 +731,14 @@ function periodKey(d, period) {
 }
 
 function renderChartAg() {
-  const groups = groupAg(FILTERED_AG, PERIOD_AG);
+  // usa "Agendamento no dia:" como fallback quando "para o dia" está vazio
+  const rows = FILTERED_AG.map(r => {
+    if (!r['  Agendamento\npara o dia'] && r['Agendamento no dia:']) {
+      return { ...r, '  Agendamento\npara o dia': r['Agendamento no dia:'] };
+    }
+    return r;
+  });
+  const groups = groupAg(rows, PERIOD_AG);
   const keys = Object.keys(groups).slice(-12);
   const maxV = Math.max(...keys.map(k => groups[k].length), 1);
   document.getElementById('chart-ag').innerHTML = keys.length ? keys.map(k => {
