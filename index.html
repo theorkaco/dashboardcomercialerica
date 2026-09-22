@@ -198,12 +198,15 @@ footer { border-top: 1px solid var(--border-light); padding: 1rem clamp(1rem,3vw
   <div class="filter-group">
     <span class="filter-label">Período</span>
     <select id="f-periodo" onchange="applyFilters()">
-      <option value="all">Todos</option>
-      <option value="7">Últimos 7 dias</option>
-      <option value="30" selected>Últimos 30 dias</option>
-      <option value="90">Últimos 90 dias</option>
-      <option value="mes">Este mês</option>
-    </select>
+  <option value="all">Todos</option>
+  <option value="hoje">Hoje</option>
+  <option value="ontem">Ontem</option>
+  <option value="7">Últimos 7 dias</option>
+  <option value="30" selected>Últimos 30 dias</option>
+  <option value="90">Últimos 90 dias</option>
+  <option value="mes">Este mês</option>
+  <option value="mes_ant">Mês passado</option>
+</select>
   </div>
   <div class="filter-sep"></div>
   <div class="filter-group">
@@ -360,21 +363,14 @@ footer { border-top: 1px solid var(--border-light); padding: 1rem clamp(1rem,3vw
 <script>
 // ── CONFIG ──────────────────────────────────────────────────
 const PROXY_URL = 'https://dashboardcomercial.ericasantiagopmu.workers.dev';
-  const REFRESH_INTERVAL = 5 * 60 * 1000;
-
-// Preços dos produtos
-const PRECOS = {
-  'ATIVAÇÃO': 5997,
-  'MENTORIA': 15000,
-  'TREINAMENTO LABIO': 2497,
-  'TREINAMENTO LÁBIO': 2497,
-  'CIENCIA DA CORE': 1997,
-  'CIÊNCIA DA CORE': 1997,
-};
+const REFRESH_INTERVAL = 5 * 60 * 1000;
+const META_VALOR = 100000;
 
 // ── ESTADO ──────────────────────────────────────────────────
-let ALL = [], FILTERED = [], CURRENT_TAB = 'todos';
+let ALL_AG = [], ALL_VD = [], FILTERED_AG = [], FILTERED_VD = [];
+let CURRENT_TAB = 'todos';
 let PERIOD_AG = 'semana', PERIOD_REC = 'semana';
+let DATE_START = null, DATE_END = null;
 
 // ── FETCH ───────────────────────────────────────────────────
 async function fetchData() {
@@ -382,7 +378,7 @@ async function fetchData() {
     const res = await fetch(PROXY_URL);
     const json = await res.json();
     if (json.status !== 'ok') throw new Error(json.message);
-    return json.data;
+    return { agendamentos: json.agendamentos || [], vendas: json.vendas || [] };
   } catch(e) {
     document.getElementById('error-banner').classList.add('show');
     return null;
@@ -390,18 +386,31 @@ async function fetchData() {
 }
 
 // ── HELPERS ─────────────────────────────────────────────────
+function parseValor(v) {
+  if (typeof v === 'number') return v;
+  const s = String(v).replace(/[^0-9,.]/g, '');
+  // "3.497" com ponto como milhar → 3497
+  if (/^\d{1,3}\.\d{3}$/.test(s)) return parseFloat(s.replace('.', ''));
+  return parseFloat(s.replace(',', '.')) || 0;
+}
+
+function getDataAg(r) {
+  const v = r['  Agendamento\npara o dia'] || r['Agendamento no dia:'] || '';
+  if (!v) return null;
+  const d = new Date(v);
+  return isNaN(d) ? null : d;
+}
+
+function getDataVenda(v) {
+  const raw = v['Data'] || '';
+  if (!raw) return null;
+  const d = new Date(raw);
+  return isNaN(d) ? null : d;
+}
+
 function comprou(r) {
   const prod = (r['Produto Vendido'] || '').trim().toUpperCase();
   return prod !== '' && prod !== 'NENHUM';
-}
-
-function getPreco(r) {
-  if (r['_valorReal'] && r['_valorReal'] > 0) {
-    const v = parseFloat(String(r['_valorReal']).replace(',', '.'));
-    return v >= 100 ? v : v * 1000; // corrige 3.497 → 3497
-  }
-  const prod = (r['Produto Vendido'] || r['Último Funil'] || '').toUpperCase().trim();
-  return PRECOS[prod] || 0;
 }
 
 function getStatus(r) {
@@ -414,19 +423,6 @@ function getStatus(r) {
   return 'outro';
 }
 
-function getDataRaw(r) {
-  const v = r['  Agendamento\npara o dia'] || r['Agendamento no dia:'] || r['Agendamento no dia'] || '';
-  if (!v) return null;
-  // formato dd/MM/yyyy
-  if (typeof v === 'string' && /^\d{2}\/\d{2}\/\d{4}$/.test(v)) {
-    const [dd, mm, yyyy] = v.split('/');
-    return new Date(+yyyy, +mm - 1, +dd);
-  }
-  // formato ISO 2026-08-11T07:00:00.000Z
-  const d = new Date(v);
-  return isNaN(d) ? null : d;
-}
-
 function fmtDate(d) {
   if (!d) return '-';
   const dt = d instanceof Date ? d : new Date(d);
@@ -435,7 +431,7 @@ function fmtDate(d) {
 }
 
 function fmtMoney(n) {
-  if (!n) return 'R$ 0';
+  if (!n || n === 0) return 'R$ 0';
   if (n >= 1000000) return 'R$ ' + (n/1000000).toFixed(1).replace('.0','') + 'M';
   if (n >= 1000) return 'R$ ' + (n/1000).toFixed(1).replace('.0','') + 'k';
   return 'R$ ' + n.toLocaleString('pt-BR');
@@ -445,45 +441,72 @@ function pct(a, b) { return b ? Math.round((a/b)*100) : 0; }
 function convCls(p) { return p >= 40 ? 'conv-good' : p >= 20 ? 'conv-mid' : 'conv-bad'; }
 function pctCls(p) { return p >= 40 ? 'good' : p >= 20 ? 'mid' : 'bad'; }
 
+// ── FILTRO DE DATA ───────────────────────────────────────────
+function getDateRange(periodo) {
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  if (periodo === 'hoje') return { start: today, end: new Date(today.getTime() + 86400000) };
+  if (periodo === 'ontem') {
+    const d = new Date(today.getTime() - 86400000);
+    return { start: d, end: today };
+  }
+  if (periodo === '7')  return { start: new Date(today.getTime() - 7*86400000), end: null };
+  if (periodo === '30') return { start: new Date(today.getTime() - 30*86400000), end: null };
+  if (periodo === '90') return { start: new Date(today.getTime() - 90*86400000), end: null };
+  if (periodo === 'mes') return { start: new Date(now.getFullYear(), now.getMonth(), 1), end: null };
+  if (periodo === 'mes_ant') return {
+    start: new Date(now.getFullYear(), now.getMonth()-1, 1),
+    end: new Date(now.getFullYear(), now.getMonth(), 1)
+  };
+  if (periodo === 'custom') return { start: DATE_START, end: DATE_END };
+  return { start: null, end: null };
+}
+
 // ── FILTROS ─────────────────────────────────────────────────
 function applyFilters() {
-  const periodo  = document.getElementById('f-periodo').value;
-  const status   = document.getElementById('f-status').value;
-  const produto  = document.getElementById('f-produto').value;
-  const lead     = document.getElementById('f-lead').value;
+  const periodo = document.getElementById('f-periodo').value;
+  const status  = document.getElementById('f-status').value;
+  const produto = document.getElementById('f-produto').value;
+  const lead    = document.getElementById('f-lead').value;
 
-  const now = new Date();
-  let cutoff = null;
-  if (periodo === '7')  cutoff = new Date(now - 7*86400000);
-  if (periodo === '30') cutoff = new Date(now - 30*86400000);
-  if (periodo === '90') cutoff = new Date(now - 90*86400000);
-  if (periodo === 'mes') cutoff = new Date(now.getFullYear(), now.getMonth(), 1);
+  const { start, end } = getDateRange(periodo);
 
-  FILTERED = ALL.filter(r => {
-    const d = getDataRaw(r);
-    if (cutoff && d && d < cutoff) return false;
+  // filtrar agendamentos
+  FILTERED_AG = ALL_AG.filter(r => {
+    const d = getDataAg(r);
+    if (start && d && d < start) return false;
+    if (end   && d && d >= end)  return false;
 
     if (status) {
       const st = getStatus(r);
       const comp = comprou(r);
-      if (status === 'comprou'        && !comp) return false;
-      if (status === 'Compareceu'     && st !== 'compareceu') return false;
-      if (status === 'Agendado'       && st !== 'agendado') return false;
-      if (status === 'No Show'        && st !== 'noshow') return false;
-      if (status === 'Reagendamento'  && st !== 'reagend') return false;
-      if (status === 'Cancelado'      && st !== 'cancel') return false;
+      if (status === 'comprou'       && !comp) return false;
+      if (status === 'Compareceu'    && st !== 'compareceu') return false;
+      if (status === 'Agendado'      && st !== 'agendado') return false;
+      if (status === 'No Show'       && st !== 'noshow') return false;
+      if (status === 'Reagendamento' && st !== 'reagend') return false;
+      if (status === 'Cancelado'     && st !== 'cancel') return false;
     }
-
     if (produto) {
       const p = (r['Produto Vendido'] || r['Último Funil'] || '').toUpperCase().trim();
       if (!p.includes(produto)) return false;
     }
-
     if (lead) {
       const l = (r['Lead novo ou antigo?'] || '').toUpperCase().trim();
       if (!l.includes(lead)) return false;
     }
+    return true;
+  });
 
+  // filtrar vendas pela data da venda
+  FILTERED_VD = ALL_VD.filter(v => {
+    const d = getDataVenda(v);
+    if (start && d && d < start) return false;
+    if (end   && d && d >= end)  return false;
+    if (produto) {
+      const p = (v['Produto Vendido'] || '').toUpperCase().trim();
+      if (!p.includes(produto)) return false;
+    }
     return true;
   });
 
@@ -492,33 +515,34 @@ function applyFilters() {
 
 // ── KPIs ────────────────────────────────────────────────────
 function renderKPIs() {
-  const rows = FILTERED;
-  const total     = rows.length;
-  const realizados = rows.filter(r => getStatus(r) === 'compareceu' || comprou(r)).length;
-  const noshow    = rows.filter(r => getStatus(r) === 'noshow').length;
-  const vendas    = rows.filter(r => comprou(r)).length;
-  const receita   = rows.filter(r => comprou(r)).reduce((s,r) => s + getPreco(r), 0);
-  const ticket    = vendas ? receita / vendas : 0;
-  const conv      = pct(vendas, realizados);
+  const ag = FILTERED_AG;
+  const vd = FILTERED_VD;
 
-  const kpis = [
-    { icon:'📅', label:'Agendamentos', value: total, delta: null, hi: false },
-    { icon:'🤝', label:'Realizadas',   value: realizados, delta: pct(realizados, total) + '% dos agend.', hi: false },
-    { icon:'❌', label:'No Show',       value: noshow, delta: pct(noshow, total) + '% dos agend.', hi: false, bad: true },
-    { icon:'💰', label:'Vendas',        value: vendas, delta: conv + '% conv. reunião', hi: true },
-    { icon:'💵', label:'Receita Total', value: fmtMoney(receita), delta: null, hi: true },
-    { icon:'🎯', label:'Ticket Médio',  value: fmtMoney(ticket), delta: null, hi: false },
-  ];
+  const total      = ag.length;
+  const realizados = ag.filter(r => getStatus(r) === 'compareceu' || comprou(r)).length;
+  const noshow     = ag.filter(r => getStatus(r) === 'noshow').length;
+  const vendas     = vd.length;
+  const receita    = vd.reduce((s, v) => s + parseValor(v['_valor'] || v['Valor da Venda'] || 0), 0);
+  const ticket     = vendas ? receita / vendas : 0;
+  const conv       = pct(vendas, realizados);
 
   // Meta
-  const META = 100000;
-  const pctMeta = Math.min(Math.round((receita / META) * 100), 100);
-  document.getElementById('meta-label').textContent = `${fmtMoney(receita)} de ${fmtMoney(META)}`;
+  const pctMeta = Math.min(Math.round((receita / META_VALOR) * 100), 100);
+  document.getElementById('meta-label').textContent = `${fmtMoney(receita)} de ${fmtMoney(META_VALOR)}`;
   document.getElementById('meta-pct').textContent = pctMeta + '%';
   document.getElementById('meta-bar').style.width = pctMeta + '%';
 
+  const kpis = [
+    { icon:'📅', label:'Agendamentos', value: total, delta: null },
+    { icon:'🤝', label:'Realizadas',   value: realizados, delta: pct(realizados, total) + '% dos agend.' },
+    { icon:'❌', label:'No Show',       value: noshow, delta: pct(noshow, total) + '% dos agend.', bad: true },
+    { icon:'💰', label:'Vendas',        value: vendas, delta: conv + '% conv. reunião', hi: true },
+    { icon:'💵', label:'Receita Total', value: fmtMoney(receita), delta: null, hi: true },
+    { icon:'🎯', label:'Ticket Médio',  value: fmtMoney(ticket), delta: null },
+  ];
+
   document.getElementById('kpi-row').innerHTML = kpis.map(k => `
-  <div class="kpi-card ${k.hi ? 'highlight' : ''}">
+    <div class="kpi-card ${k.hi ? 'highlight' : ''}">
       <div class="kpi-icon">${k.icon}</div>
       <div class="kpi-value">${k.value}</div>
       <div class="kpi-label">${k.label}</div>
@@ -529,15 +553,15 @@ function renderKPIs() {
 
 // ── FUNIL ───────────────────────────────────────────────────
 function renderFunil() {
-  const rows = FILTERED;
-  const agendados  = rows.length;
-  const realizados = rows.filter(r => getStatus(r) === 'compareceu' || comprou(r)).length;
-  const propostas = rows.filter(r => {
-  const compareceu = getStatus(r) === 'compareceu' || comprou(r);
-  const pitch = (r['Pitch CLOSER'] || '').trim().toUpperCase();
-  return compareceu && pitch !== '' && pitch !== 'NENHUM';
-}).length;
-  const vendas     = rows.filter(r => comprou(r)).length;
+  const ag = FILTERED_AG;
+  const agendados  = ag.length;
+  const realizados = ag.filter(r => getStatus(r) === 'compareceu' || comprou(r)).length;
+  const propostas  = ag.filter(r => {
+    const compareceu = getStatus(r) === 'compareceu' || comprou(r);
+    const pitch = (r['Pitch CLOSER'] || '').trim().toUpperCase();
+    return compareceu && pitch !== '' && pitch !== 'NENHUM';
+  }).length;
+  const vendas = FILTERED_VD.length;
 
   const stages = [
     { label: 'Agendado',  count: agendados,  color: 'rgba(24,54,93,0.8)' },
@@ -547,7 +571,7 @@ function renderFunil() {
   ];
 
   const max = agendados || 1;
-  const html = stages.map((s, i) => {
+  document.getElementById('funil-visual').innerHTML = stages.map((s, i) => {
     const prev = i > 0 ? stages[i-1].count : null;
     const w = Math.max(8, Math.round((s.count / max) * 100));
     const c = prev !== null ? pct(s.count, prev) : null;
@@ -561,22 +585,13 @@ function renderFunil() {
           </div>
           <div class="funnel-bar-count">${s.count}</div>
         </div>
-        ${c !== null ? `
-          <div class="funnel-conversion">
-            <span>↓</span>
-            <span class="${convCls(c)}">${c}% conversão</span>
-            ${lost > 0 ? `<span class="conv-lost">· -${lost}</span>` : ''}
-          </div>` : ''}
+        ${c !== null ? `<div class="funnel-conversion"><span>↓</span><span class="${convCls(c)}">${c}% conversão</span>${lost > 0 ? `<span class="conv-lost">· -${lost}</span>` : ''}</div>` : ''}
       </div>`;
   }).join('');
 
-  document.getElementById('funil-visual').innerHTML = html;
-
-  const noshow   = rows.filter(r => getStatus(r) === 'noshow').length;
-  const cancel   = rows.filter(r => getStatus(r) === 'cancel').length;
+  const noshow = ag.filter(r => getStatus(r) === 'noshow').length;
+  const cancel = ag.filter(r => getStatus(r) === 'cancel').length;
   const convFinal = pct(vendas, realizados);
-
-  // bottleneck
   let worstLabel = '-', worstDrop = 0;
   for (let i = 1; i < stages.length; i++) {
     const drop = 100 - pct(stages[i].count, stages[i-1].count);
@@ -584,36 +599,25 @@ function renderFunil() {
   }
 
   document.getElementById('funil-side').innerHTML = `
+    <div class="stat-card"><div>
+      <div class="stat-label">Conversão Final</div>
+      <div class="stat-value">${convFinal}%</div>
+      <div class="stat-sub">Reunião → Venda</div>
+    </div></div>
     <div class="stat-card">
-      <div>
-        <div class="stat-label">Conversão Final</div>
-        <div class="stat-value">${convFinal}%</div>
-        <div class="stat-sub">Reunião → Venda</div>
-      </div>
-    </div>
-    <div class="stat-card">
-      <div>
-        <div class="stat-label">Maior Gargalo</div>
-        <div class="stat-value" style="font-size:1rem;color:var(--red)">${worstLabel}</div>
-        <div class="stat-sub">-${worstDrop}% nesta etapa</div>
-      </div>
+      <div><div class="stat-label">Maior Gargalo</div><div class="stat-value" style="font-size:1rem;color:var(--red)">${worstLabel}</div><div class="stat-sub">-${worstDrop}% nesta etapa</div></div>
       <div class="badge-atencao">Atenção</div>
     </div>
-    <div class="stat-card">
-      <div>
-        <div class="stat-label">No Show</div>
-        <div class="stat-value">${noshow}</div>
-        <div class="stat-sub">${pct(noshow, agendados)}% dos agendamentos</div>
-      </div>
-    </div>
-    <div class="stat-card">
-      <div>
-        <div class="stat-label">Cancelamentos</div>
-        <div class="stat-value">${cancel}</div>
-        <div class="stat-sub">${pct(cancel, agendados)}% dos agendamentos</div>
-      </div>
-    </div>
-  `;
+    <div class="stat-card"><div>
+      <div class="stat-label">No Show</div>
+      <div class="stat-value">${noshow}</div>
+      <div class="stat-sub">${pct(noshow, agendados)}% dos agendamentos</div>
+    </div></div>
+    <div class="stat-card"><div>
+      <div class="stat-label">Cancelamentos</div>
+      <div class="stat-value">${cancel}</div>
+      <div class="stat-sub">${pct(cancel, agendados)}% dos agendamentos</div>
+    </div></div>`;
 }
 
 // ── EQUIPE ───────────────────────────────────────────────────
@@ -626,18 +630,17 @@ function switchTab(tab, el) {
 
 function renderEquipe() {
   const TEAM = {
-  'SHEILA':      { role: 'SS' },
-  'MARIA':       { role: 'SDR' },
-  'MARIA & SHEILA': { role: 'SDR' },
-  'IZABEL':      { role: 'SDR' },
-  'OLIVER':       { role: 'Closer' },
-  'ERICA':       { role: 'Closer' },
-};
+    'SHEILA': { role: 'SS' }, 'LUANY': { role: 'SS' },
+    'MARIA': { role: 'SDR' }, 'DR MARIA': { role: 'SDR' }, 'DRA MARIA': { role: 'SDR' },
+    'MARIA & SHEILA': { role: 'SDR' }, 'SHEILA E MARIA': { role: 'SDR' },
+    'IZABEL': { role: 'SDR' },
+    'ERICA': { role: 'Closer' }, 'OLIVER': { role: 'Closer' },
+  };
 
   const pessoas = {};
 
-  FILTERED.forEach(r => {
-    const closer   = (r['Closer'] || '').trim().toUpperCase();
+  FILTERED_AG.forEach(r => {
+    const closer    = (r['Closer'] || '').trim().toUpperCase();
     const prevendas = (r['Nome (PRÉ VENDAS)'] || r['Nome (PRE VENDAS)'] || '').trim().toUpperCase();
 
     [closer, prevendas].forEach(nome => {
@@ -649,15 +652,21 @@ function renderEquipe() {
       if (!pessoas[nome]) pessoas[nome] = { nome, role, total: 0, realizados: 0, vendas: 0, receita: 0 };
       pessoas[nome].total++;
       if (getStatus(r) === 'compareceu' || comprou(r)) pessoas[nome].realizados++;
-      if (comprou(r)) {
-        pessoas[nome].vendas++;
-        pessoas[nome].receita += getPreco(r);
-      }
+      if (comprou(r)) pessoas[nome].vendas++;
+    });
+  });
+
+  // receita vem da aba VENDAS
+  FILTERED_VD.forEach(v => {
+    const resp = (v['Responsável'] || '').trim().toUpperCase();
+    const prev = (v['Nome (PRÉ VENDAS)'] || '').trim().toUpperCase();
+    const valor = parseValor(v['_valor'] || v['Valor da Venda'] || 0);
+    [resp, prev].forEach(nome => {
+      if (nome && pessoas[nome]) pessoas[nome].receita += valor;
     });
   });
 
   const lista = Object.values(pessoas).sort((a,b) => b.receita - a.receita || b.vendas - a.vendas);
-
   if (!lista.length) {
     document.getElementById('team-body').innerHTML = '<div class="empty-state">Nenhum dado para os filtros selecionados.</div>';
     return;
@@ -668,63 +677,61 @@ function renderEquipe() {
 
   document.getElementById('team-body').innerHTML = `
     <table class="team-table">
-      <thead><tr>
-        <th>Colaborador</th>
-        <th>Agend.</th>
-        <th>Realizadas</th>
-        <th>Vendas</th>
-        <th>Receita</th>
-        <th>Conv.</th>
-      </tr></thead>
-      <tbody>
-        ${lista.map(p => {
-          const conv = pct(p.vendas, p.realizados);
-          return `<tr>
-            <td>
-              <div style="font-weight:600;color:var(--text)">${p.nome}</div>
-              <div style="margin-top:3px"><span class="role-badge ${roleCls[p.role]}">${roleLabel[p.role]}</span></div>
-            </td>
-            <td style="color:var(--text-muted);text-align:center">${p.total}</td>
-            <td style="color:var(--text-muted);text-align:center">${p.realizados}</td>
-            <td style="color:var(--text-muted);text-align:center">${p.vendas}</td>
-            <td class="td-money" style="text-align:center">${fmtMoney(p.receita)}</td>
-            <td class="td-pct ${pctCls(conv)}" style="text-align:center">${conv}%</td>
-          </tr>`;
-        }).join('')}
-      </tbody>
+      <thead><tr><th>Colaborador</th><th>Agend.</th><th>Realizadas</th><th>Vendas</th><th>Receita</th><th>Conv.</th></tr></thead>
+      <tbody>${lista.map(p => {
+        const conv = pct(p.vendas, p.realizados);
+        return `<tr>
+          <td><div style="font-weight:600;color:var(--text)">${p.nome}</div>
+          <div style="margin-top:3px"><span class="role-badge ${roleCls[p.role]}">${roleLabel[p.role]}</span></div></td>
+          <td style="color:var(--text-muted);text-align:center">${p.total}</td>
+          <td style="color:var(--text-muted);text-align:center">${p.realizados}</td>
+          <td style="color:var(--text-muted);text-align:center">${p.vendas}</td>
+          <td class="td-money" style="text-align:center">${fmtMoney(p.receita)}</td>
+          <td class="td-pct ${pctCls(conv)}" style="text-align:center">${conv}%</td>
+        </tr>`;
+      }).join('')}</tbody>
     </table>`;
 }
 
 // ── CHARTS ───────────────────────────────────────────────────
-function groupByPeriod(rows, period) {
+function groupAg(rows, period) {
   const groups = {};
   rows.forEach(r => {
-    let d = getDataRaw(r);
-    if (!d) {
-      // tenta data de agendamento como fallback
-      const v = r['Agendamento no dia:'] || '';
-      if (v) d = new Date(v);
-    }
+    const d = getDataAg(r);
     if (!d || isNaN(d)) return;
-    let key;
-    if (period === 'dia') key = d.toLocaleDateString('pt-BR');
-    else if (period === 'semana') {
-      const s = new Date(d); s.setDate(d.getDate() - d.getDay());
-      key = s.toLocaleDateString('pt-BR');
-    } else {
-      key = `${d.getMonth()+1}/${d.getFullYear().toString().slice(2)}`;
-    }
+    const key = periodKey(d, period);
     if (!groups[key]) groups[key] = [];
     groups[key].push(r);
   });
   return groups;
 }
 
+function groupVd(rows, period) {
+  const groups = {};
+  rows.forEach(v => {
+    const d = getDataVenda(v);
+    if (!d || isNaN(d)) return;
+    const key = periodKey(d, period);
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(v);
+  });
+  return groups;
+}
+
+function periodKey(d, period) {
+  if (period === 'dia') return d.toLocaleDateString('pt-BR');
+  if (period === 'semana') {
+    const s = new Date(d); s.setDate(d.getDate() - d.getDay());
+    return s.toLocaleDateString('pt-BR');
+  }
+  return `${d.getMonth()+1}/${d.getFullYear().toString().slice(2)}`;
+}
+
 function renderChartAg() {
-  const groups = groupByPeriod(FILTERED, PERIOD_AG);
+  const groups = groupAg(FILTERED_AG, PERIOD_AG);
   const keys = Object.keys(groups).slice(-12);
   const maxV = Math.max(...keys.map(k => groups[k].length), 1);
-  document.getElementById('chart-ag').innerHTML = keys.map(k => {
+  document.getElementById('chart-ag').innerHTML = keys.length ? keys.map(k => {
     const ag = groups[k].length;
     const vd = groups[k].filter(r => comprou(r)).length;
     const hA = Math.round((ag/maxV)*130);
@@ -736,15 +743,15 @@ function renderChartAg() {
       </div>
       <div class="bar-x">${k}</div>
     </div>`;
-  }).join('') || '<div style="color:var(--text-dim);font-size:12px;margin:auto">Sem dados</div>';
+  }).join('') : '<div style="color:var(--text-dim);font-size:12px;margin:auto">Sem dados</div>';
 }
 
 function renderChartRec() {
-  const groups = groupByPeriod(FILTERED, PERIOD_REC);
+  const groups = groupVd(FILTERED_VD, PERIOD_REC);
   const keys = Object.keys(groups).slice(-12);
-  const maxV = Math.max(...keys.map(k => groups[k].filter(r=>comprou(r)).reduce((s,r)=>s+getPreco(r),0)), 1);
-  document.getElementById('chart-rec').innerHTML = keys.map(k => {
-    const rec = groups[k].filter(r=>comprou(r)).reduce((s,r)=>s+getPreco(r),0);
+  const maxV = Math.max(...keys.map(k => groups[k].reduce((s,v) => s + parseValor(v['_valor'] || v['Valor da Venda'] || 0), 0)), 1);
+  document.getElementById('chart-rec').innerHTML = keys.length ? keys.map(k => {
+    const rec = groups[k].reduce((s,v) => s + parseValor(v['_valor'] || v['Valor da Venda'] || 0), 0);
     const h = Math.round((rec/maxV)*130);
     return `<div class="bar-item" style="flex:1">
       <div style="height:130px;display:flex;align-items:flex-end">
@@ -752,7 +759,7 @@ function renderChartRec() {
       </div>
       <div class="bar-x">${k}</div>
     </div>`;
-  }).join('') || '<div style="color:var(--text-dim);font-size:12px;margin:auto">Sem dados</div>';
+  }).join('') : '<div style="color:var(--text-dim);font-size:12px;margin:auto">Sem dados</div>';
 }
 
 function switchPeriod(p, btn) {
@@ -773,15 +780,11 @@ const STATUS_CLS = { compareceu:'s-sim', agendado:'s-outro', noshow:'s-noshow', 
 const STATUS_LBL = { compareceu:'Compareceu', agendado:'Agendado', noshow:'No Show', cancel:'Cancelado', reagend:'Reagendado', outro:'-' };
 
 function renderRecent() {
-  const rows = [...FILTERED]
-    .sort((a,b) => {
-      const da = getDataRaw(a), db = getDataRaw(b);
-      return (db||0) - (da||0);
-    })
+  const rows = [...FILTERED_AG]
+    .sort((a,b) => (getDataAg(b)||0) - (getDataAg(a)||0))
     .slice(0, 25);
 
-  document.getElementById('recent-count').textContent = `${rows.length} de ${FILTERED.length}`;
-
+  document.getElementById('recent-count').textContent = `${rows.length} de ${FILTERED_AG.length}`;
   if (!rows.length) {
     document.getElementById('recent-body').innerHTML = '<div class="empty-state">Nenhum registro encontrado.</div>';
     return;
@@ -789,32 +792,21 @@ function renderRecent() {
 
   document.getElementById('recent-body').innerHTML = `
     <table class="r-table">
-      <thead><tr>
-        <th>Nome</th>
-        <th>Data Reunião</th>
-        <th>Closer</th>
-        <th>Pré-Vendas</th>
-        <th>Produto</th>
-        <th>Status</th>
-        <th>Receita</th>
-      </tr></thead>
-      <tbody>
-        ${rows.map(r => {
-          const st = getStatus(r);
-          const prod = (r['Produto Vendido'] || r['Último Funil'] || '').trim();
-          const comp = comprou(r);
-          const preco = comp ? getPreco(r) : 0;
-          return `<tr>
-            <td style="font-weight:600;color:var(--text)">${r['Nome'] || '-'}</td>
-            <td style="color:var(--text-muted)">${fmtDate(getDataRaw(r))}</td>
-            <td style="color:var(--text-muted)">${r['Closer'] || '-'}</td>
-            <td style="color:var(--text-muted)">${r['Nome (PRÉ VENDAS)'] || r['Nome (PRE VENDAS)'] || '-'}</td>
-            <td>${prod ? `<span class="prod-badge">${prod}</span>` : '-'}</td>
-            <td><span class="status-badge ${comp ? 's-sim' : STATUS_CLS[st]}">${comp ? 'Comprou' : STATUS_LBL[st]}</span></td>
-            <td style="color:var(--blue-light);font-weight:600">${preco ? fmtMoney(preco) : '-'}</td>
-          </tr>`;
-        }).join('')}
-      </tbody>
+      <thead><tr><th>Nome</th><th>Data Reunião</th><th>Closer</th><th>Pré-Vendas</th><th>Produto</th><th>Status</th></tr></thead>
+      <tbody>${rows.map(r => {
+        const st = getStatus(r);
+        const prod = (r['Produto Vendido'] || r['Último Funil'] || '').trim().toUpperCase();
+        const comp = comprou(r);
+        const showProd = prod && prod !== 'NENHUM';
+        return `<tr>
+          <td style="font-weight:600;color:var(--text)">${r['Nome'] || '-'}</td>
+          <td style="color:var(--text-muted)">${fmtDate(getDataAg(r))}</td>
+          <td style="color:var(--text-muted)">${r['Closer'] || '-'}</td>
+          <td style="color:var(--text-muted)">${r['Nome (PRÉ VENDAS)'] || r['Nome (PRE VENDAS)'] || '-'}</td>
+          <td>${showProd ? `<span class="prod-badge">${prod}</span>` : '-'}</td>
+          <td><span class="status-badge ${comp ? 's-sim' : STATUS_CLS[st]}">${comp ? 'Comprou' : STATUS_LBL[st]}</span></td>
+        </tr>`;
+      }).join('')}</tbody>
     </table>`;
 }
 
@@ -839,7 +831,10 @@ function updateTime() {
 
 async function init() {
   const data = await fetchData();
-  ALL = data || [];
+  if (data) {
+    ALL_AG = data.agendamentos || [];
+    ALL_VD = data.vendas || [];
+  }
   applyFilters();
   updateTime();
   const obs = new IntersectionObserver(entries => {
@@ -851,7 +846,7 @@ async function init() {
 init();
 setInterval(async () => {
   const data = await fetchData();
-  if (data) { ALL = data; applyFilters(); updateTime(); }
+  if (data) { ALL_AG = data.agendamentos || []; ALL_VD = data.vendas || []; applyFilters(); updateTime(); }
 }, REFRESH_INTERVAL);
 </script>
 </body>
